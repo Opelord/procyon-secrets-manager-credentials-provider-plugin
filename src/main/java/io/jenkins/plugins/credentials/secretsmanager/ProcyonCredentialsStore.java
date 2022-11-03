@@ -24,13 +24,13 @@ import hudson.security.ACL;
 import hudson.security.Permission;
 import jenkins.model.Jenkins;
 
-public class AwsCredentialsStore extends CredentialsStore {
+public class ProcyonCredentialsStore extends CredentialsStore {
 
-    private final AwsCredentialsProvider provider;
-    private final AwsCredentialsStoreAction action = new AwsCredentialsStoreAction(this);
+    private final ProcyonCredentialsProvider provider;
+    private final DemoCredentialsStoreAction action = new DemoCredentialsStoreAction(this);
 
-    public AwsCredentialsStore(AwsCredentialsProvider provider) {
-        super(AwsCredentialsProvider.class);
+    public ProcyonCredentialsStore(ProcyonCredentialsProvider provider) {
+        super(ProcyonCredentialsProvider.class);
         this.provider = provider;
     }
 
@@ -68,14 +68,14 @@ public class AwsCredentialsStore extends CredentialsStore {
     @Override
     public boolean removeCredentials(@NonNull Domain domain, @NonNull Credentials credentials) {
         throw new UnsupportedOperationException(
-                "Jenkins may not remove credentials from AWS Secrets Manager");
+                "Jenkins may not remove credentials from Secrets Manager");
     }
 
     @Override
     public boolean updateCredentials(@NonNull Domain domain, @NonNull Credentials current,
                                      @NonNull Credentials replacement) {
         throw new UnsupportedOperationException(
-                "Jenkins may not update credentials in AWS Secrets Manager");
+                "Jenkins may not update credentials in Secrets Manager");
     }
 
     @Nullable
@@ -88,13 +88,13 @@ public class AwsCredentialsStore extends CredentialsStore {
      * Expose the store.
      */
     @ExportedBean
-    public static class AwsCredentialsStoreAction extends CredentialsStoreAction {
+    public static class DemoCredentialsStoreAction extends CredentialsStoreAction {
 
         private static final String ICON_CLASS = "icon-aws-secrets-manager-credentials-store";
 
-        private final AwsCredentialsStore store;
+        private final ProcyonCredentialsStore store;
 
-        private AwsCredentialsStoreAction(AwsCredentialsStore store) {
+        private DemoCredentialsStoreAction(ProcyonCredentialsStore store) {
             this.store = store;
             addIcons();
         }

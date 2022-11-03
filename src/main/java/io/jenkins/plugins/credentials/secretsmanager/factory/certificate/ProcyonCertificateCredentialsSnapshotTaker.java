@@ -7,16 +7,16 @@ import io.jenkins.plugins.credentials.secretsmanager.factory.Snapshot;
 
 @Extension
 @SuppressWarnings("unused")
-public class AwsCertificateCredentialsSnapshotTaker extends CredentialsSnapshotTaker<AwsCertificateCredentials> {
+public class ProcyonCertificateCredentialsSnapshotTaker extends CredentialsSnapshotTaker<ProcyonCertificateCredentials> {
     @Override
-    public Class<AwsCertificateCredentials> type() {
-        return AwsCertificateCredentials.class;
+    public Class<ProcyonCertificateCredentials> type() {
+        return ProcyonCertificateCredentials.class;
     }
 
     @Override
-    public AwsCertificateCredentials snapshot(AwsCertificateCredentials credential) {
+    public ProcyonCertificateCredentials snapshot(ProcyonCertificateCredentials credential) {
         final SecretBytes result = credential.getSecretBytes();
-        return new AwsCertificateCredentials(credential.getId(), credential.getDescription(), new SecretBytesSnapshot(result));
+        return new ProcyonCertificateCredentials(credential.getId(), credential.getDescription(), new SecretBytesSnapshot(result));
     }
 
     private static class SecretBytesSnapshot extends Snapshot<SecretBytes> {

@@ -6,15 +6,15 @@ import io.jenkins.plugins.credentials.secretsmanager.factory.Snapshot;
 
 @Extension
 @SuppressWarnings("unused")
-public class AwsSshUserPrivateKeySnapshotTaker extends CredentialsSnapshotTaker<AwsSshUserPrivateKey> {
+public class ProcyonSshUserPrivateKeySnapshotTaker extends CredentialsSnapshotTaker<ProcyonSshUserPrivateKey> {
     @Override
-    public Class<AwsSshUserPrivateKey> type() {
-        return AwsSshUserPrivateKey.class;
+    public Class<ProcyonSshUserPrivateKey> type() {
+        return ProcyonSshUserPrivateKey.class;
     }
 
     @Override
-    public AwsSshUserPrivateKey snapshot(AwsSshUserPrivateKey credential) {
-        return new AwsSshUserPrivateKey(credential.getId(), credential.getDescription(), new StringSnapshot(credential.getPrivateKey()), credential.getUsername());
+    public ProcyonSshUserPrivateKey snapshot(ProcyonSshUserPrivateKey credential) {
+        return new ProcyonSshUserPrivateKey(credential.getId(), credential.getDescription(), new StringSnapshot(credential.getPrivateKey()), credential.getUsername());
     }
 
     private static class StringSnapshot extends Snapshot<String> {

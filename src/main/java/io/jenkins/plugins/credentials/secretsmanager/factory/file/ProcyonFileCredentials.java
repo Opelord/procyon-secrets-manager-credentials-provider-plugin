@@ -4,7 +4,7 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.SecretBytes;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import hudson.Extension;
-import io.jenkins.plugins.credentials.secretsmanager.AwsCredentialsProvider;
+import io.jenkins.plugins.credentials.secretsmanager.ProcyonCredentialsProvider;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
 import org.jenkinsci.plugins.plaincredentials.FileCredentials;
 
@@ -13,7 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
-public class AwsFileCredentials extends BaseStandardCredentials implements FileCredentials {
+public class ProcyonFileCredentials extends BaseStandardCredentials implements FileCredentials {
 
     @Nonnull
     private final String fileName;
@@ -21,7 +21,7 @@ public class AwsFileCredentials extends BaseStandardCredentials implements FileC
     @Nonnull
     private final Supplier<SecretBytes> content;
 
-    public AwsFileCredentials(String id, String description, String fileName, Supplier<SecretBytes> content) {
+    public ProcyonFileCredentials(String id, String description, String fileName, Supplier<SecretBytes> content) {
         super(id, description);
         this.fileName = fileName;
         this.content = content;
@@ -56,7 +56,7 @@ public class AwsFileCredentials extends BaseStandardCredentials implements FileC
 
         @Override
         public boolean isApplicable(CredentialsProvider provider) {
-            return provider instanceof AwsCredentialsProvider;
+            return provider instanceof ProcyonCredentialsProvider;
         }
     }
 }

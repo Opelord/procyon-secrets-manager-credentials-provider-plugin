@@ -33,7 +33,7 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
 
     @Override
     public Collection<StandardCredentials> get() {
-        LOG.log(Level.FINE,"Retrieve secrets from AWS Secrets Manager");
+        LOG.log(Level.FINE,"Retrieve secrets from Secrets Manager");
 
         final PluginConfiguration config = PluginConfiguration.getInstance();
 

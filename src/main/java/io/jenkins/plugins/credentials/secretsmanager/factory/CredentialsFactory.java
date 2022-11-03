@@ -10,11 +10,11 @@ import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.util.Secret;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
-import io.jenkins.plugins.credentials.secretsmanager.factory.certificate.AwsCertificateCredentials;
-import io.jenkins.plugins.credentials.secretsmanager.factory.file.AwsFileCredentials;
-import io.jenkins.plugins.credentials.secretsmanager.factory.ssh_user_private_key.AwsSshUserPrivateKey;
-import io.jenkins.plugins.credentials.secretsmanager.factory.string.AwsStringCredentials;
-import io.jenkins.plugins.credentials.secretsmanager.factory.username_password.AwsUsernamePasswordCredentials;
+import io.jenkins.plugins.credentials.secretsmanager.factory.certificate.ProcyonCertificateCredentials;
+import io.jenkins.plugins.credentials.secretsmanager.factory.file.ProcyonFileCredentials;
+import io.jenkins.plugins.credentials.secretsmanager.factory.ssh_user_private_key.ProcyonSshUserPrivateKey;
+import io.jenkins.plugins.credentials.secretsmanager.factory.string.ProcyonStringCredentials;
+import io.jenkins.plugins.credentials.secretsmanager.factory.username_password.ProcyonUsernamePasswordCredentials;
 
 import java.util.Map;
 import java.util.Optional;
@@ -43,15 +43,15 @@ public abstract class CredentialsFactory {
 
         switch (type) {
             case Type.string:
-                return Optional.of(new AwsStringCredentials(name, description, new SecretSupplier(client, arn)));
+                return Optional.of(new ProcyonStringCredentials(name, description, new SecretSupplier(client, arn)));
             case Type.usernamePassword:
-                return Optional.of(new AwsUsernamePasswordCredentials(name, description, new SecretSupplier(client, arn), username));
+                return Optional.of(new ProcyonUsernamePasswordCredentials(name, description, new SecretSupplier(client, arn), username));
             case Type.sshUserPrivateKey:
-                return Optional.of(new AwsSshUserPrivateKey(name, description, new StringSupplier(client, arn), username));
+                return Optional.of(new ProcyonSshUserPrivateKey(name, description, new StringSupplier(client, arn), username));
             case Type.certificate:
-                return Optional.of(new AwsCertificateCredentials(name, description, new SecretBytesSupplier(client, arn)));
+                return Optional.of(new ProcyonCertificateCredentials(name, description, new SecretBytesSupplier(client, arn)));
             case Type.file:
-                return Optional.of(new AwsFileCredentials(name, description, filename, new SecretBytesSupplier(client, arn)));
+                return Optional.of(new ProcyonFileCredentials(name, description, filename, new SecretBytesSupplier(client, arn)));
             default:
                 return Optional.empty();
         }

@@ -26,11 +26,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Extension
-public class AwsCredentialsProvider extends CredentialsProvider {
+public class ProcyonCredentialsProvider extends CredentialsProvider {
 
-    private static final Logger LOG = Logger.getLogger(AwsCredentialsProvider.class.getName());
+    private static final Logger LOG = Logger.getLogger(ProcyonCredentialsProvider.class.getName());
 
-    private final AwsCredentialsStore store = new AwsCredentialsStore(this);
+    private final ProcyonCredentialsStore store = new ProcyonCredentialsStore(this);
 
     private final Supplier<Collection<StandardCredentials>> credentialsSupplier =
             memoizeWithExpiration(CredentialsSupplier.standard(), () ->
@@ -66,7 +66,7 @@ public class AwsCredentialsProvider extends CredentialsProvider {
 
     @Override
     public String getIconClassName() {
-        return "icon-aws-secrets-manager-credentials-store";
+        return "";
     }
 
     private static <T> Supplier<T> memoizeWithExpiration(Supplier<T> base, Supplier<Duration> duration) {

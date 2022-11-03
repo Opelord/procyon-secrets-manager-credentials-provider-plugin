@@ -6,7 +6,7 @@ import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.util.Secret;
-import io.jenkins.plugins.credentials.secretsmanager.AwsCredentialsProvider;
+import io.jenkins.plugins.credentials.secretsmanager.ProcyonCredentialsProvider;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
 
 import javax.annotation.Nonnull;
@@ -14,13 +14,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class AwsSshUserPrivateKey extends BaseStandardCredentials implements SSHUserPrivateKey {
+public class ProcyonSshUserPrivateKey extends BaseStandardCredentials implements SSHUserPrivateKey {
     private static final Secret NO_PASSPHRASE = Secret.fromString("");
 
     private final Supplier<String> privateKey;
     private final String username;
 
-    public AwsSshUserPrivateKey(String id, String description, Supplier<String> privateKey, String username) {
+    public ProcyonSshUserPrivateKey(String id, String description, Supplier<String> privateKey, String username) {
         super(id, description);
         this.privateKey = privateKey;
         this.username = username;
@@ -66,7 +66,7 @@ public class AwsSshUserPrivateKey extends BaseStandardCredentials implements SSH
 
         @Override
         public boolean isApplicable(CredentialsProvider provider) {
-            return provider instanceof AwsCredentialsProvider;
+            return provider instanceof ProcyonCredentialsProvider;
         }
     }
 }

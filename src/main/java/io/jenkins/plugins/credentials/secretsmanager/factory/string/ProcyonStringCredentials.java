@@ -4,18 +4,18 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import hudson.Extension;
 import hudson.util.Secret;
-import io.jenkins.plugins.credentials.secretsmanager.AwsCredentialsProvider;
+import io.jenkins.plugins.credentials.secretsmanager.ProcyonCredentialsProvider;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
-public class AwsStringCredentials extends BaseStandardCredentials implements StringCredentials {
+public class ProcyonStringCredentials extends BaseStandardCredentials implements StringCredentials {
 
     private final Supplier<Secret> value;
 
-    public AwsStringCredentials(String id, String description, Supplier<Secret> value) {
+    public ProcyonStringCredentials(String id, String description, Supplier<Secret> value) {
         super(id, description);
         this.value = value;
     }
@@ -37,7 +37,7 @@ public class AwsStringCredentials extends BaseStandardCredentials implements Str
 
         @Override
         public boolean isApplicable(CredentialsProvider provider) {
-            return provider instanceof AwsCredentialsProvider;
+            return provider instanceof ProcyonCredentialsProvider;
         }
     }
 }
