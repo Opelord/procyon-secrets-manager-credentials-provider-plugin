@@ -1,7 +1,4 @@
-package io.jenkins.plugins.credentials.secretsmanager.procyonconfig;
-
-import com.amazonaws.ClientConfigurationFactory;
-import com.amazonaws.services.secretsmanager.AWSSecretsManager;
+package io.jenkins.plugins.credentials.secretsmanager.config;
 
 public final class ProcyonSecretsManagerClientBuilder extends ProcyonSyncClientBuilder<ProcyonSecretsManagerClientBuilder, ProcyonSecretsManager>{
 

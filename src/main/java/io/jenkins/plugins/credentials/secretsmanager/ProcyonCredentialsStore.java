@@ -136,7 +136,7 @@ public class ProcyonCredentialsStore extends CredentialsStore {
 
         @Override
         public String getDisplayName() {
-            return Messages.awsSecretsManager();
+            return Messages.procyonSecretsManager();
         }
     }
 }

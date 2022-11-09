@@ -1,4 +1,4 @@
-package io.jenkins.plugins.credentials.secretsmanager.procyonconfig.credentialsProvider;
+package io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider;
 
 public interface ProcyonCredentialsProvider {
 

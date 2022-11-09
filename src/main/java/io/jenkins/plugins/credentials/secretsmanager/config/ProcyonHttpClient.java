@@ -1,4 +1,4 @@
-package io.jenkins.plugins.credentials.secretsmanager.procyonconfig;
+package io.jenkins.plugins.credentials.secretsmanager.config;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;

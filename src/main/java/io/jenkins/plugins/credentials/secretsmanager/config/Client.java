@@ -1,16 +1,11 @@
 package io.jenkins.plugins.credentials.secretsmanager.config;
 
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.secretsmanager.AWSSecretsManager;
-import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import hudson.Extension;
-import hudson.Util;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
-import hudson.util.ListBoxModel;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.CredentialsProvider;
-import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.DefaultAWSCredentialsProviderChain;
+import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.DefaultProcyonCredentialsProviderChain;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
@@ -27,13 +22,10 @@ public class Client extends AbstractDescribableImpl<Client> implements Serializa
 
     private EndpointConfiguration endpointConfiguration;
 
-    private String region;
-
     @DataBoundConstructor
-    public Client(CredentialsProvider credentialsProvider, EndpointConfiguration endpointConfiguration, String region) {
+    public Client(CredentialsProvider credentialsProvider, EndpointConfiguration endpointConfiguration) {
         this.credentialsProvider = credentialsProvider;
         this.endpointConfiguration = endpointConfiguration;
-        this.region = region;
     }
 
     public EndpointConfiguration getEndpointConfiguration() {
@@ -54,17 +46,8 @@ public class Client extends AbstractDescribableImpl<Client> implements Serializa
         this.credentialsProvider = credentialsProvider;
     }
 
-    public String getRegion() {
-        return region;
-    }
-
-    @DataBoundSetter
-    public void setRegion(String region) {
-        this.region = Util.fixEmptyAndTrim(region);
-    }
-
-    public AWSSecretsManager build() {
-        final AWSSecretsManagerClientBuilder builder = AWSSecretsManagerClientBuilder.standard();
+    public ProcyonSecretsManager build() {
+        final ProcyonSecretsManagerClientBuilder builder = ProcyonSecretsManagerClientBuilder.standard();
 
         if (credentialsProvider != null) {
             builder.setCredentials(credentialsProvider.build());
@@ -72,10 +55,6 @@ public class Client extends AbstractDescribableImpl<Client> implements Serializa
 
         if (endpointConfiguration != null) {
             builder.setEndpointConfiguration(endpointConfiguration.build());
-        }
-
-        if (region != null && !region.isEmpty()) {
-            builder.setRegion(region);
         }
 
         return builder.build();
@@ -87,13 +66,12 @@ public class Client extends AbstractDescribableImpl<Client> implements Serializa
         if (o == null || getClass() != o.getClass()) return false;
         Client client = (Client) o;
         return Objects.equals(credentialsProvider, client.credentialsProvider) &&
-                Objects.equals(endpointConfiguration, client.endpointConfiguration) &&
-                Objects.equals(region, client.region);
+                Objects.equals(endpointConfiguration, client.endpointConfiguration);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(credentialsProvider, endpointConfiguration, region);
+        return Objects.hash(credentialsProvider, endpointConfiguration);
     }
 
     @Extension
@@ -101,23 +79,14 @@ public class Client extends AbstractDescribableImpl<Client> implements Serializa
     @SuppressWarnings("unused")
     public static class DescriptorImpl extends Descriptor<Client> {
 
-        public CredentialsProvider getDefaultCredentialsProvider() {
-            return new DefaultAWSCredentialsProviderChain();
+        public DefaultProcyonCredentialsProviderChain getDefaultCredentialsProvider() {
+            return new DefaultProcyonCredentialsProviderChain();
         }
 
         @Override
         @Nonnull
         public String getDisplayName() {
             return Messages.client();
-        }
-
-        public ListBoxModel doFillRegionItems() {
-            final ListBoxModel regions = new ListBoxModel();
-            regions.add("", "");
-            for (Regions s : Regions.values()) {
-                regions.add(s.getDescription(), s.getName());
-            }
-            return regions;
         }
     }
 }

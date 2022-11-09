@@ -12,9 +12,9 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package io.jenkins.plugins.credentials.secretsmanager.procyonconfig;
+package io.jenkins.plugins.credentials.secretsmanager.config;
 
-import com.amazonaws.ApacheHttpClientConfig;
+
 import com.amazonaws.annotation.NotThreadSafe;
 import com.amazonaws.http.IdleConnectionReaper;
 import com.amazonaws.http.SystemPropertyTlsKeyManagersProvider;
@@ -23,20 +23,19 @@ import com.amazonaws.retry.PredefinedRetryPolicies;
 import com.amazonaws.retry.RetryMode;
 import com.amazonaws.retry.RetryPolicy;
 import com.amazonaws.util.StringUtils;
-import com.amazonaws.util.ValidationUtils;
 import com.amazonaws.util.VersionInfoUtils;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
 
 @NotThreadSafe
 public class ClientConfiguration {
@@ -339,9 +338,7 @@ public class ClientConfiguration {
     private TlsKeyManagersProvider tlsKeyManagersProvider;
     private RetryMode retryMode;
 
-    public ClientConfiguration() {
-
-    }
+    public ClientConfiguration() {}
 
     public ClientConfiguration(ClientConfiguration other) {
         this.connectionTimeout = other.getConnectionTimeout();
@@ -371,6 +368,7 @@ public class ClientConfiguration {
         this.signerOverride = other.getSignerOverride();
         this.responseMetadataCacheSize = other.getResponseMetadataCacheSize();
         this.useExpectContinue = other.isUseExpectContinue();
+//        this.apacheHttpClientConfig = new ApacheHttpClientConfig(other.getApacheHttpClientConfig());
         this.cacheResponseMetadata = other.getCacheResponseMetadata();
         this.connectionTTL = other.getConnectionTTL();
         this.connectionMaxIdleMillis = other.getConnectionMaxIdleMillis();
@@ -2149,6 +2147,10 @@ public class ClientConfiguration {
         setResponseMetadataCacheSize(responseMetadataCacheSize);
         return this;
     }
+
+//    public ApacheHttpClientConfig getApacheHttpClientConfig() {
+//        return apacheHttpClientConfig;
+//    }
 
     /**
      * Returns the instance of {@link SecureRandom} configured by the user; or the JDK default if it

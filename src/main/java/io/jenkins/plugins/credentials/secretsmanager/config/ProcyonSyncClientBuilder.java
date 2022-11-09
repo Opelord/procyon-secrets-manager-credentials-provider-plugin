@@ -1,11 +1,8 @@
-package io.jenkins.plugins.credentials.secretsmanager.procyonconfig;
+package io.jenkins.plugins.credentials.secretsmanager.config;
 
-import com.amazonaws.ClientConfigurationFactory;
 import com.amazonaws.annotation.NotThreadSafe;
 import com.amazonaws.annotation.SdkProtectedApi;
-import com.amazonaws.annotation.SdkTestInternalApi;
-import com.amazonaws.client.AwsSyncClientParams;
-import com.amazonaws.regions.AwsRegionProvider;
+import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfiguration;
 
 /**
  * Base class for all service specific sync client builders.
@@ -33,7 +30,5 @@ public abstract class ProcyonSyncClientBuilder<Subclass extends ProcyonSyncClien
      * @param clientParams Client Params to create client with
      * @return Built client.
      */
-    protected abstract TypeToBuild build(AwsSyncClientParams clientParams);
-
-    protected abstract ProcyonSecretsManager build(ProcyonSyncClientParams clientParams);
+    protected abstract TypeToBuild build(ProcyonSyncClientParams clientParams);
 }

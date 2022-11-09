@@ -1,21 +1,11 @@
-package io.jenkins.plugins.credentials.secretsmanager.procyonconfig;
+package io.jenkins.plugins.credentials.secretsmanager.config;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.amazonaws.*;
-import com.amazonaws.annotation.SdkInternalApi;
 import com.amazonaws.annotation.SdkProtectedApi;
-import com.amazonaws.auth.*;
-import com.amazonaws.client.AwsSyncClientParams;
 import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.util.RuntimeHttpUtils;
-import com.amazonaws.util.StringUtils;
-import io.jenkins.plugins.credentials.secretsmanager.procyonconfig.credentialsProvider.ProcyonCredentialsProvider;
+import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProcyonCredentialsProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -53,7 +43,7 @@ public abstract class ProcyonGoClient {
 
     protected ProcyonHttpClient client;
 
-    private ProcyonGoClient(ClientConfiguration clientConfiguration) {
+    ProcyonGoClient(ClientConfiguration clientConfiguration) {
         ProcyonSyncClientParams clientParams = new ProcyonSyncClientParams() {
             @Override
             public ProcyonCredentialsProvider getCredentialsProvider() {
@@ -151,6 +141,6 @@ public abstract class ProcyonGoClient {
     }
 
     public ClientConfiguration getClientConfiguration() {
-        return new com.amazonaws.ClientConfiguration(clientConfiguration);
+        return new ClientConfiguration(clientConfiguration);
     }
 }

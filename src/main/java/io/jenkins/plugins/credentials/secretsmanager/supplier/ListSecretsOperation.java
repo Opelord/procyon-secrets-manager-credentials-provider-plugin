@@ -1,10 +1,10 @@
 package io.jenkins.plugins.credentials.secretsmanager.supplier;
 
-import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.model.Filter;
 import com.amazonaws.services.secretsmanager.model.ListSecretsRequest;
 import com.amazonaws.services.secretsmanager.model.ListSecretsResult;
 import com.amazonaws.services.secretsmanager.model.SecretListEntry;
+import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSecretsManager;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
  */
 class ListSecretsOperation implements Supplier<Collection<SecretListEntry>> {
 
-    private final AWSSecretsManager client;
+    private final ProcyonSecretsManager client;
 
     private final Collection<Filter> filters;
 
-    ListSecretsOperation(AWSSecretsManager client, Collection<Filter> filters) {
+    ListSecretsOperation(ProcyonSecretsManager client, Collection<Filter> filters) {
         this.client = client;
         this.filters = filters;
     }
@@ -32,20 +32,21 @@ class ListSecretsOperation implements Supplier<Collection<SecretListEntry>> {
     public Collection<SecretListEntry> get() {
         final List<SecretListEntry> secretList = new ArrayList<>();
 
-        Optional<String> nextToken = Optional.empty();
-        do {
-            final ListSecretsRequest base = new ListSecretsRequest()
-                    .withFilters(filters);
-            final ListSecretsRequest request = nextToken.map((nt) -> base.withNextToken(nt)).orElse(base);
-            final ListSecretsResult result = client.listSecrets(request);
-            final List<SecretListEntry> secrets = result.getSecretList()
-                    .stream()
-                    .filter(ListSecretsOperation::isNotDeleted)
-                    .collect(Collectors.toList());
-            secretList.addAll(secrets);
-            nextToken = Optional.ofNullable(result.getNextToken());
-        } while (nextToken.isPresent());
+//        Optional<String> nextToken = Optional.empty();
+//        do {
+//            final ListSecretsRequest base = new ListSecretsRequest()
+//                    .withFilters(filters);
+//            final ListSecretsRequest request = nextToken.map((nt) -> base.withNextToken(nt)).orElse(base);
+//            final ListSecretsResult result = client.listSecrets(request);
+//            final List<SecretListEntry> secrets = result.getSecretList()
+//                    .stream()
+//                    .filter(ListSecretsOperation::isNotDeleted)
+//                    .collect(Collectors.toList());
+//            secretList.addAll(secrets);
+//            nextToken = Optional.ofNullable(result.getNextToken());
+//        } while (nextToken.isPresent());
 
+        secretList.add(new SecretListEntry());
         return secretList;
     }
 

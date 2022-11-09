@@ -1,6 +1,5 @@
 package io.jenkins.plugins.credentials.secretsmanager.supplier;
 
-import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.model.Filter;
 import com.amazonaws.services.secretsmanager.model.SecretListEntry;
 import com.amazonaws.services.secretsmanager.model.Tag;
@@ -9,8 +8,9 @@ import io.jenkins.plugins.credentials.secretsmanager.FiltersFactory;
 import io.jenkins.plugins.credentials.secretsmanager.config.Client;
 import io.jenkins.plugins.credentials.secretsmanager.config.ListSecrets;
 import io.jenkins.plugins.credentials.secretsmanager.config.PluginConfiguration;
-import io.jenkins.plugins.credentials.secretsmanager.config.*;
+import io.jenkins.plugins.credentials.secretsmanager.config.Transformations;
 import io.jenkins.plugins.credentials.secretsmanager.factory.CredentialsFactory;
+import io.jenkins.plugins.credentials.secretsmanager.config.*;
 
 import java.util.*;
 import java.util.function.Function;
@@ -42,7 +42,7 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
 
         final Collection<Filter> filters = createListSecretsFilters(config);
 
-        final AWSSecretsManager client = createClient(config);
+        final ProcyonSecretsManager client = createClient(config);
 
         final ListSecretsOperation listSecretsOperation = new ListSecretsOperation(client, filters);
 
@@ -88,9 +88,9 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
                 .orElse(new io.jenkins.plugins.credentials.secretsmanager.config.transformer.description.Default())::transform;
     }
 
-    private static AWSSecretsManager createClient(PluginConfiguration config) {
+    private static ProcyonSecretsManager createClient(PluginConfiguration config) {
         final Client clientConfig = Optional.ofNullable(config.getClient())
-                .orElse(new Client(null, null, null));
+                .orElse(new Client(null, null));
 
         return clientConfig.build();
     }

@@ -11,7 +11,7 @@ public class MoveEndpointConfigurationToClientTest extends MigrationTest {
         assertSoftly(s -> {
             s.assertThat(config.getClient().getEndpointConfiguration())
                     .as("New property")
-                    .isEqualTo(new EndpointConfiguration("http://localhost:4584", "us-east-1"));
+                    .isEqualTo(new EndpointConfiguration("http://localhost:4584"));
             s.assertThat(config)
                     .extracting("endpointConfiguration")
                     .as("Old property")

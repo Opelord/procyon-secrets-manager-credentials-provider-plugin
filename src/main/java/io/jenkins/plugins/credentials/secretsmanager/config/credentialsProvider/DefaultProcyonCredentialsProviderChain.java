@@ -1,4 +1,4 @@
-package io.jenkins.plugins.credentials.secretsmanager.procyonconfig.credentialsProvider;
+package io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider;
 
 import hudson.Extension;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
@@ -9,6 +9,9 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public class DefaultProcyonCredentialsProviderChain extends CredentialsProvider implements ProcyonCredentialsProvider {
+
+    private static final DefaultProcyonCredentialsProviderChain INSTANCE
+            = new DefaultProcyonCredentialsProviderChain();
 
     @DataBoundConstructor
     public DefaultProcyonCredentialsProviderChain() {
@@ -53,5 +56,9 @@ public class DefaultProcyonCredentialsProviderChain extends CredentialsProvider 
         public String getDisplayName() {
             return Messages.defaultClient();
         }
+    }
+
+    public static DefaultProcyonCredentialsProviderChain getInstance() {
+        return INSTANCE;
     }
 }
