@@ -13,9 +13,22 @@ package io.jenkins.plugins.credentials.secretsmanager.config;
  * and limitations under the License.
  */
 
-import java.io.Serializable;
-public class SecretListEntry implements Serializable, Cloneable {
+import com.amazonaws.SdkClientException;
+import com.amazonaws.protocol.*;
+import com.amazonaws.services.secretsmanager.model.Tag;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+public class SecretListEntry implements Serializable, Cloneable, StructuredPojo {
+
+    /**
+     * <p>
+     * Unique Identifier for secret.
+     * </p>
+     */
+    private Integer ID;
     /**
      * <p>
      * The friendly name of the secret. You can use forward slashes in the name to represent a path hierarchy. For
@@ -23,7 +36,6 @@ public class SecretListEntry implements Serializable, Cloneable {
      * <code>dbserver1</code> in the folder <code>databases</code> in the folder <code>prod</code>.
      * </p>
      */
-    @Override
     private String name;
     /**
      * <p>
@@ -66,16 +78,16 @@ public class SecretListEntry implements Serializable, Cloneable {
      * </p>
      */
     private java.util.Date deletedDate;
-//    /**
-//     * <p>
-//     * The list of user-defined tags associated with the secret. To add tags to a secret, use <a
-//     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
-//     * <code>TagResource</code> </a>. To remove tags, use <a
-//     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
-//     * <code>UntagResource</code> </a>.
-//     * </p>
-//     */
-//    private java.util.List<Tag> tags;
+    /**
+     * <p>
+     * The list of user-defined tags associated with the secret. To add tags to a secret, use <a
+     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
+     * <code>TagResource</code> </a>. To remove tags, use <a
+     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
+     * <code>UntagResource</code> </a>.
+     * </p>
+     */
+    private java.util.List<Tag> tags;
     /**
      * <p>
      * A list of all of the currently assigned <code>SecretVersionStage</code> staging labels and the
@@ -102,6 +114,24 @@ public class SecretListEntry implements Serializable, Cloneable {
      * </p>
      */
     private java.util.Date createdDate;
+
+    public void setID(Integer id) {
+        this.ID = id;
+    }
+
+    public Integer getID() {
+        return this.ID;
+    }
+
+    /**
+    <p>
+    Returns a reference to this object so that method calls can be chained together.
+    </p>
+    */
+    public SecretListEntry withID(Integer id) {
+        setID(id);
+        return this;
+    }
 
     /**
      * <p>
@@ -440,107 +470,107 @@ public class SecretListEntry implements Serializable, Cloneable {
         return this;
     }
 
-//    /**
-//     * <p>
-//     * The list of user-defined tags associated with the secret. To add tags to a secret, use <a
-//     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
-//     * <code>TagResource</code> </a>. To remove tags, use <a
-//     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
-//     * <code>UntagResource</code> </a>.
-//     * </p>
-//     *
-//     * @return The list of user-defined tags associated with the secret. To add tags to a secret, use <a
-//     *         href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
-//     *         <code>TagResource</code> </a>. To remove tags, use <a
-//     *         href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
-//     *         <code>UntagResource</code> </a>.
-//     */
-//
-//    public java.util.List<Tag> getTags() {
-//        return tags;
-//    }
-//
-//    /**
-//     * <p>
-//     * The list of user-defined tags associated with the secret. To add tags to a secret, use <a
-//     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
-//     * <code>TagResource</code> </a>. To remove tags, use <a
-//     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
-//     * <code>UntagResource</code> </a>.
-//     * </p>
-//     *
-//     * @param tags
-//     *        The list of user-defined tags associated with the secret. To add tags to a secret, use <a
-//     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
-//     *        <code>TagResource</code> </a>. To remove tags, use <a
-//     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
-//     *        <code>UntagResource</code> </a>.
-//     */
-//
-//    public void setTags(java.util.Collection<Tag> tags) {
-//        if (tags == null) {
-//            this.tags = null;
-//            return;
-//        }
-//
-//        this.tags = new java.util.ArrayList<Tag>(tags);
-//    }
-//
-//    /**
-//     * <p>
-//     * The list of user-defined tags associated with the secret. To add tags to a secret, use <a
-//     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
-//     * <code>TagResource</code> </a>. To remove tags, use <a
-//     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
-//     * <code>UntagResource</code> </a>.
-//     * </p>
-//     * <p>
-//     * <b>NOTE:</b> This method appends the values to the existing list (if any). Use
-//     * {@link #setTags(java.util.Collection)} or {@link #withTags(java.util.Collection)} if you want to override the
-//     * existing values.
-//     * </p>
-//     *
-//     * @param tags
-//     *        The list of user-defined tags associated with the secret. To add tags to a secret, use <a
-//     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
-//     *        <code>TagResource</code> </a>. To remove tags, use <a
-//     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
-//     *        <code>UntagResource</code> </a>.
-//     * @return Returns a reference to this object so that method calls can be chained together.
-//     */
-//
-//    public SecretListEntry withTags(Tag... tags) {
-//        if (this.tags == null) {
-//            setTags(new java.util.ArrayList<Tag>(tags.length));
-//        }
-//        for (Tag ele : tags) {
-//            this.tags.add(ele);
-//        }
-//        return this;
-//    }
-//
-//    /**
-//     * <p>
-//     * The list of user-defined tags associated with the secret. To add tags to a secret, use <a
-//     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
-//     * <code>TagResource</code> </a>. To remove tags, use <a
-//     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
-//     * <code>UntagResource</code> </a>.
-//     * </p>
-//     *
-//     * @param tags
-//     *        The list of user-defined tags associated with the secret. To add tags to a secret, use <a
-//     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
-//     *        <code>TagResource</code> </a>. To remove tags, use <a
-//     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
-//     *        <code>UntagResource</code> </a>.
-//     * @return Returns a reference to this object so that method calls can be chained together.
-//     */
-//
-//    public SecretListEntry withTags(java.util.Collection<Tag> tags) {
-//        setTags(tags);
-//        return this;
-//    }
+    /**
+     * <p>
+     * The list of user-defined tags associated with the secret. To add tags to a secret, use <a
+     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
+     * <code>TagResource</code> </a>. To remove tags, use <a
+     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
+     * <code>UntagResource</code> </a>.
+     * </p>
+     *
+     * @return The list of user-defined tags associated with the secret. To add tags to a secret, use <a
+     *         href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
+     *         <code>TagResource</code> </a>. To remove tags, use <a
+     *         href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
+     *         <code>UntagResource</code> </a>.
+     */
+
+    public java.util.List<Tag> getTags() {
+        return tags;
+    }
+
+    /**
+     * <p>
+     * The list of user-defined tags associated with the secret. To add tags to a secret, use <a
+     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
+     * <code>TagResource</code> </a>. To remove tags, use <a
+     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
+     * <code>UntagResource</code> </a>.
+     * </p>
+     *
+     * @param tags
+     *        The list of user-defined tags associated with the secret. To add tags to a secret, use <a
+     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
+     *        <code>TagResource</code> </a>. To remove tags, use <a
+     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
+     *        <code>UntagResource</code> </a>.
+     */
+
+    public void setTags(java.util.Collection<Tag> tags) {
+        if (tags == null) {
+            this.tags = null;
+            return;
+        }
+
+        this.tags = new java.util.ArrayList<Tag>(tags);
+    }
+
+    /**
+     * <p>
+     * The list of user-defined tags associated with the secret. To add tags to a secret, use <a
+     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
+     * <code>TagResource</code> </a>. To remove tags, use <a
+     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
+     * <code>UntagResource</code> </a>.
+     * </p>
+     * <p>
+     * <b>NOTE:</b> This method appends the values to the existing list (if any). Use
+     * {@link #setTags(java.util.Collection)} or {@link #withTags(java.util.Collection)} if you want to override the
+     * existing values.
+     * </p>
+     *
+     * @param tags
+     *        The list of user-defined tags associated with the secret. To add tags to a secret, use <a
+     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
+     *        <code>TagResource</code> </a>. To remove tags, use <a
+     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
+     *        <code>UntagResource</code> </a>.
+     * @return Returns a reference to this object so that method calls can be chained together.
+     */
+
+    public SecretListEntry withTags(Tag... tags) {
+        if (this.tags == null) {
+            setTags(new java.util.ArrayList<Tag>(tags.length));
+        }
+        for (Tag ele : tags) {
+            this.tags.add(ele);
+        }
+        return this;
+    }
+
+    /**
+     * <p>
+     * The list of user-defined tags associated with the secret. To add tags to a secret, use <a
+     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
+     * <code>TagResource</code> </a>. To remove tags, use <a
+     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
+     * <code>UntagResource</code> </a>.
+     * </p>
+     *
+     * @param tags
+     *        The list of user-defined tags associated with the secret. To add tags to a secret, use <a
+     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
+     *        <code>TagResource</code> </a>. To remove tags, use <a
+     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
+     *        <code>UntagResource</code> </a>.
+     * @return Returns a reference to this object so that method calls can be chained together.
+     */
+
+    public SecretListEntry withTags(java.util.Collection<Tag> tags) {
+        setTags(tags);
+        return this;
+    }
 
     /**
      * <p>
@@ -744,6 +774,8 @@ public class SecretListEntry implements Serializable, Cloneable {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
+        if (getID() != null)
+            sb.append("ID: ").append(getID()).append(",");
         if (getName() != null)
             sb.append("Name: ").append(getName()).append(",");
         if (getDescription() != null)
@@ -758,8 +790,8 @@ public class SecretListEntry implements Serializable, Cloneable {
             sb.append("LastAccessedDate: ").append(getLastAccessedDate()).append(",");
         if (getDeletedDate() != null)
             sb.append("DeletedDate: ").append(getDeletedDate()).append(",");
-//        if (getTags() != null)
-//            sb.append("Tags: ").append(getTags()).append(",");
+        if (getTags() != null)
+            sb.append("Tags: ").append(getTags()).append(",");
         if (getSecretVersionsToStages() != null)
             sb.append("SecretVersionsToStages: ").append(getSecretVersionsToStages()).append(",");
         if (getOwningService() != null)
@@ -780,6 +812,10 @@ public class SecretListEntry implements Serializable, Cloneable {
         if (obj instanceof SecretListEntry == false)
             return false;
         SecretListEntry other = (SecretListEntry) obj;
+        if (other.getID() == null ^ this.getID() == null)
+            return false;
+        if (other.getID() != null && other.getID().equals(this.getID()) == false)
+            return false;
         if (other.getName() == null ^ this.getName() == null)
             return false;
         if (other.getName() != null && other.getName().equals(this.getName()) == false)
@@ -808,10 +844,10 @@ public class SecretListEntry implements Serializable, Cloneable {
             return false;
         if (other.getDeletedDate() != null && other.getDeletedDate().equals(this.getDeletedDate()) == false)
             return false;
-//        if (other.getTags() == null ^ this.getTags() == null)
-//            return false;
-//        if (other.getTags() != null && other.getTags().equals(this.getTags()) == false)
-//            return false;
+        if (other.getTags() == null ^ this.getTags() == null)
+            return false;
+        if (other.getTags() != null && other.getTags().equals(this.getTags()) == false)
+            return false;
         if (other.getSecretVersionsToStages() == null ^ this.getSecretVersionsToStages() == null)
             return false;
         if (other.getSecretVersionsToStages() != null && other.getSecretVersionsToStages().equals(this.getSecretVersionsToStages()) == false)
@@ -832,6 +868,7 @@ public class SecretListEntry implements Serializable, Cloneable {
         final int prime = 31;
         int hashCode = 1;
 
+        hashCode = prime * hashCode + ((getID() == null) ? 0 : getID().hashCode());
         hashCode = prime * hashCode + ((getName() == null) ? 0 : getName().hashCode());
         hashCode = prime * hashCode + ((getDescription() == null) ? 0 : getDescription().hashCode());
         hashCode = prime * hashCode + ((getRotationEnabled() == null) ? 0 : getRotationEnabled().hashCode());
@@ -839,7 +876,7 @@ public class SecretListEntry implements Serializable, Cloneable {
         hashCode = prime * hashCode + ((getLastChangedDate() == null) ? 0 : getLastChangedDate().hashCode());
         hashCode = prime * hashCode + ((getLastAccessedDate() == null) ? 0 : getLastAccessedDate().hashCode());
         hashCode = prime * hashCode + ((getDeletedDate() == null) ? 0 : getDeletedDate().hashCode());
-//        hashCode = prime * hashCode + ((getTags() == null) ? 0 : getTags().hashCode());
+        hashCode = prime * hashCode + ((getTags() == null) ? 0 : getTags().hashCode());
         hashCode = prime * hashCode + ((getSecretVersionsToStages() == null) ? 0 : getSecretVersionsToStages().hashCode());
         hashCode = prime * hashCode + ((getOwningService() == null) ? 0 : getOwningService().hashCode());
         hashCode = prime * hashCode + ((getCreatedDate() == null) ? 0 : getCreatedDate().hashCode());
@@ -857,6 +894,68 @@ public class SecretListEntry implements Serializable, Cloneable {
 
     @Override
     public void marshall(ProtocolMarshaller protocolMarshaller) {
-        com.amazonaws.services.secretsmanager.model.transform.SecretListEntryMarshaller.getInstance().marshall(this, protocolMarshaller);
+        SecretListEntryMarshaller.getInstance().marshall(this, protocolMarshaller);
+    }
+
+    private static class SecretListEntryMarshaller {
+
+        private static final MarshallingInfo<Integer> ID_BINDING = MarshallingInfo.builder(MarshallingType.INTEGER).marshallLocation(MarshallLocation.PAYLOAD)
+                .marshallLocationName("ID").build();
+        private static final MarshallingInfo<String> NAME_BINDING = MarshallingInfo.builder(MarshallingType.STRING).marshallLocation(MarshallLocation.PAYLOAD)
+                .marshallLocationName("Name").build();
+        private static final MarshallingInfo<String> DESCRIPTION_BINDING = MarshallingInfo.builder(MarshallingType.STRING)
+                .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("Description").build();
+        private static final MarshallingInfo<Boolean> ROTATIONENABLED_BINDING = MarshallingInfo.builder(MarshallingType.BOOLEAN)
+                .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("RotationEnabled").build();
+        private static final MarshallingInfo<java.util.Date> LASTROTATEDDATE_BINDING = MarshallingInfo.builder(MarshallingType.DATE)
+                .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("LastRotatedDate").timestampFormat("unixTimestamp").build();
+        private static final MarshallingInfo<java.util.Date> LASTCHANGEDDATE_BINDING = MarshallingInfo.builder(MarshallingType.DATE)
+                .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("LastChangedDate").timestampFormat("unixTimestamp").build();
+        private static final MarshallingInfo<java.util.Date> LASTACCESSEDDATE_BINDING = MarshallingInfo.builder(MarshallingType.DATE)
+                .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("LastAccessedDate").timestampFormat("unixTimestamp").build();
+        private static final MarshallingInfo<java.util.Date> DELETEDDATE_BINDING = MarshallingInfo.builder(MarshallingType.DATE)
+                .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("DeletedDate").timestampFormat("unixTimestamp").build();
+        private static final MarshallingInfo<List> TAGS_BINDING = MarshallingInfo.builder(MarshallingType.LIST).marshallLocation(MarshallLocation.PAYLOAD)
+                .marshallLocationName("Tags").build();
+        private static final MarshallingInfo<Map> SECRETVERSIONSTOSTAGES_BINDING = MarshallingInfo.builder(MarshallingType.MAP)
+                .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("SecretVersionsToStages").build();
+        private static final MarshallingInfo<String> OWNINGSERVICE_BINDING = MarshallingInfo.builder(MarshallingType.STRING)
+                .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("OwningService").build();
+        private static final MarshallingInfo<java.util.Date> CREATEDDATE_BINDING = MarshallingInfo.builder(MarshallingType.DATE)
+                .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("CreatedDate").timestampFormat("unixTimestamp").build();
+
+        private static final SecretListEntryMarshaller instance = new SecretListEntryMarshaller();
+
+        public static SecretListEntryMarshaller getInstance() {
+            return instance;
+        }
+
+        /**
+         * Marshall the given parameter object.
+         */
+        public void marshall(SecretListEntry secretListEntry, ProtocolMarshaller protocolMarshaller) {
+
+            if (secretListEntry == null) {
+                throw new SdkClientException("Invalid argument passed to marshall(...)");
+            }
+
+            try {
+                protocolMarshaller.marshall(secretListEntry.getID(), ID_BINDING);
+                protocolMarshaller.marshall(secretListEntry.getName(), NAME_BINDING);
+                protocolMarshaller.marshall(secretListEntry.getDescription(), DESCRIPTION_BINDING);
+                protocolMarshaller.marshall(secretListEntry.getRotationEnabled(), ROTATIONENABLED_BINDING);
+                protocolMarshaller.marshall(secretListEntry.getLastRotatedDate(), LASTROTATEDDATE_BINDING);
+                protocolMarshaller.marshall(secretListEntry.getLastChangedDate(), LASTCHANGEDDATE_BINDING);
+                protocolMarshaller.marshall(secretListEntry.getLastAccessedDate(), LASTACCESSEDDATE_BINDING);
+                protocolMarshaller.marshall(secretListEntry.getDeletedDate(), DELETEDDATE_BINDING);
+                protocolMarshaller.marshall(secretListEntry.getTags(), TAGS_BINDING);
+                protocolMarshaller.marshall(secretListEntry.getSecretVersionsToStages(), SECRETVERSIONSTOSTAGES_BINDING);
+                protocolMarshaller.marshall(secretListEntry.getOwningService(), OWNINGSERVICE_BINDING);
+                protocolMarshaller.marshall(secretListEntry.getCreatedDate(), CREATEDDATE_BINDING);
+            } catch (Exception e) {
+                throw new SdkClientException("Unable to marshall request to JSON: " + e.getMessage(), e);
+            }
+        }
+
     }
 }

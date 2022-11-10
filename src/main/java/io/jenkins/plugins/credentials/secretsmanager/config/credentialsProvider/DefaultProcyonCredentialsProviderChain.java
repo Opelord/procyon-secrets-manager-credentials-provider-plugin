@@ -15,7 +15,7 @@ public class DefaultProcyonCredentialsProviderChain extends CredentialsProvider 
 
     @DataBoundConstructor
     public DefaultProcyonCredentialsProviderChain() {
-
+        //TODO: create something like EnvironmentVariableCredentialsProvider or system properties or web identity token
     }
 
     @Override
@@ -37,7 +37,7 @@ public class DefaultProcyonCredentialsProviderChain extends CredentialsProvider 
 
     @Override
     public ProcyonCredentials getCredentials() {
-        //TODO: implement this method
+        //TODO: implement get credentials
         return null;
     }
 
