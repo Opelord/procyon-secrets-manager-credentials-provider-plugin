@@ -43,6 +43,7 @@ public class ProcyonCredentialsProvider extends CredentialsProvider {
         if (ACL.SYSTEM.equals(authentication)) {
             Collection<StandardCredentials> allCredentials = Collections.emptyList();
             try {
+                LOG.info("listing all credentials in ProcyonCredentialsProvider");
                 allCredentials = credentialsSupplier.get();
             } catch (Exception e) {
                 LOG.log(Level.WARNING, "Could not list credentials in Secrets Manager: message=[{0}]", e.getMessage());
@@ -54,7 +55,7 @@ public class ProcyonCredentialsProvider extends CredentialsProvider {
                     .map(type::cast)
                     .collect(Collectors.toList());
         }
-
+        LOG.info("returning empty list in ProcyonCredentialsProvider");
         return Collections.emptyList();
     }
 

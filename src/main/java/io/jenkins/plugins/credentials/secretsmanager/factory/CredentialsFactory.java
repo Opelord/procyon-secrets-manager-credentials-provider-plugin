@@ -11,7 +11,8 @@ import io.jenkins.plugins.credentials.secretsmanager.factory.file.ProcyonFileCre
 import io.jenkins.plugins.credentials.secretsmanager.factory.ssh_user_private_key.ProcyonSshUserPrivateKey;
 import io.jenkins.plugins.credentials.secretsmanager.factory.string.ProcyonStringCredentials;
 import io.jenkins.plugins.credentials.secretsmanager.factory.username_password.ProcyonUsernamePasswordCredentials;
-import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSecretsManager;
+import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueRequest;
+import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueResult;
 
 import java.util.Map;
 import java.util.Optional;
@@ -33,22 +34,22 @@ public abstract class CredentialsFactory {
      * @param client the Secrets Manager client that will retrieve the secret's value on demand
      * @return a credential (if one could be constructed from the secret's properties)
      */
-    public static Optional<StandardCredentials> create(String arn, String name, String description, Map<String, String> tags, ProcyonSecretsManager client) {
+    public static Optional<StandardCredentials> create(Integer id, String name, String description, Map<String, String> tags, ProcyonSecretsManager client) {
         final String type = tags.getOrDefault(Tags.type, "");
         final String username = tags.getOrDefault(Tags.username, "");
         final String filename = tags.getOrDefault(Tags.filename, name);
 
         switch (type) {
             case Type.string:
-                return Optional.of(new ProcyonStringCredentials(name, description, new SecretSupplier(client, arn)));
+                return Optional.of(new ProcyonStringCredentials(name, description, new SecretSupplier(client, id)));
             case Type.usernamePassword:
-                return Optional.of(new ProcyonUsernamePasswordCredentials(name, description, new SecretSupplier(client, arn), username));
+                return Optional.of(new ProcyonUsernamePasswordCredentials(name, description, new SecretSupplier(client, id), username));
             case Type.sshUserPrivateKey:
-                return Optional.of(new ProcyonSshUserPrivateKey(name, description, new StringSupplier(client, arn), username));
+                return Optional.of(new ProcyonSshUserPrivateKey(name, description, new StringSupplier(client, id), username));
             case Type.certificate:
-                return Optional.of(new ProcyonCertificateCredentials(name, description, new SecretBytesSupplier(client, arn)));
+                return Optional.of(new ProcyonCertificateCredentials(name, description, new SecretBytesSupplier(client, id)));
             case Type.file:
-                return Optional.of(new ProcyonFileCredentials(name, description, filename, new SecretBytesSupplier(client, arn)));
+                return Optional.of(new ProcyonFileCredentials(name, description, filename, new SecretBytesSupplier(client, id)));
             default:
                 return Optional.empty();
         }
@@ -56,8 +57,8 @@ public abstract class CredentialsFactory {
 
     private static class SecretBytesSupplier extends RealSecretsManager implements Supplier<SecretBytes> {
 
-        private SecretBytesSupplier(ProcyonSecretsManager client, String name) {
-            super(client, name);
+        private SecretBytesSupplier(ProcyonSecretsManager client, Integer id) {
+            super(client, id);
         }
 
         @Override
@@ -78,8 +79,8 @@ public abstract class CredentialsFactory {
 
     private static class SecretSupplier extends RealSecretsManager implements Supplier<Secret> {
 
-        private SecretSupplier(ProcyonSecretsManager client, String name) {
-            super(client, name);
+        private SecretSupplier(ProcyonSecretsManager client, Integer id) {
+            super(client, id);
         }
 
         @Override
@@ -100,8 +101,8 @@ public abstract class CredentialsFactory {
 
     private static class StringSupplier extends RealSecretsManager implements Supplier<String> {
 
-        private StringSupplier(ProcyonSecretsManager client, String name) {
-            super(client, name);
+        private StringSupplier(ProcyonSecretsManager client, Integer id) {
+            super(client, id);
         }
 
         @Override
@@ -124,10 +125,10 @@ public abstract class CredentialsFactory {
 
         private static final Logger LOG = Logger.getLogger(RealSecretsManager.class.getName());
 
-        private final String id;
+        private final Integer id;
         private final transient ProcyonSecretsManager client;
 
-        RealSecretsManager(ProcyonSecretsManager client, String id) {
+        RealSecretsManager(ProcyonSecretsManager client, Integer id) {
             this.client = client;
             this.id = id;
         }
@@ -135,13 +136,15 @@ public abstract class CredentialsFactory {
         @NonNull
         SecretValue getSecretValue() {
             try {
-//                final GetSecretValueResult result = client.getSecretValue(new GetSecretValueRequest().withSecretId(id));
-//                if (result.getSecretBinary() != null) {
-//                    return SecretValue.binary(result.getSecretBinary().array());
-//                }
-//                if (result.getSecretString() != null) {
-//                    return SecretValue.string(result.getSecretString());
-//                }
+                LOG.info("Getting secret binary");
+                final GetSecretValueResult result = client.getSecretValue(new GetSecretValueRequest().withSecretId(id));
+                if (result.getSecretBinary() != null) {
+                    return SecretValue.binary(result.getSecretBinary());
+                }
+                if (result.getSecretString() != null) {
+                    return SecretValue.string(result.getSecretString());
+                }
+
                 throw new IllegalStateException(Messages.emptySecretError(id));
             } catch (IllegalStateException ex) {
                 LOG.warning("Procyon Secrets Manager retrieval error");

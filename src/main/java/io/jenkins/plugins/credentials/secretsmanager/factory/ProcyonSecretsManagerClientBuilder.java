@@ -1,6 +1,10 @@
-package io.jenkins.plugins.credentials.secretsmanager.config;
+package io.jenkins.plugins.credentials.secretsmanager.factory;
 
-public final class ProcyonSecretsManagerClientBuilder extends ProcyonSyncClientBuilder<ProcyonSecretsManagerClientBuilder, ProcyonSecretsManager>{
+import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfigurationFactory;
+import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientBuilder;
+import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientParams;
+
+public final class ProcyonSecretsManagerClientBuilder extends ProcyonSyncClientBuilder<ProcyonSecretsManagerClientBuilder, ProcyonSecretsManager> {
 
     private static final ClientConfigurationFactory CLIENT_CONFIGURATION_FACTORY = new ClientConfigurationFactory();
 

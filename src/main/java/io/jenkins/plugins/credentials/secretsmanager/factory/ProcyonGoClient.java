@@ -1,10 +1,13 @@
-package io.jenkins.plugins.credentials.secretsmanager.config;
+package io.jenkins.plugins.credentials.secretsmanager.factory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.amazonaws.annotation.SdkProtectedApi;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfiguration;
+import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonHttpClient;
+import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientParams;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProcyonCredentialsProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

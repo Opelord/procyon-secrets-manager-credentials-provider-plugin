@@ -1,4 +1,4 @@
-package io.jenkins.plugins.credentials.secretsmanager.config;
+package io.jenkins.plugins.credentials.secretsmanager.model;
 
 /*
  * Copyright 2017-2022 Amazon.com, Inc. or its affiliates. All Rights Reserved.
@@ -18,6 +18,7 @@ import com.amazonaws.protocol.*;
 import com.amazonaws.services.secretsmanager.model.Tag;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
 
     /**
      * <p>
-     * Unique Identifier for secret.
+     * Identifier for secret.
      * </p>
      */
     private Integer ID;
@@ -289,7 +290,7 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      */
 
     public void setLastRotatedDate(java.util.Date lastRotatedDate) {
-        this.lastRotatedDate = lastRotatedDate;
+        this.lastRotatedDate = new Date(lastRotatedDate.getTime());
     }
 
     /**
@@ -303,7 +304,10 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      */
 
     public java.util.Date getLastRotatedDate() {
-        return this.lastRotatedDate;
+        if (this.lastRotatedDate == null) {
+            return null;
+        }
+        return new Date(this.lastRotatedDate.getTime());
     }
 
     /**
@@ -333,7 +337,7 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      */
 
     public void setLastChangedDate(java.util.Date lastChangedDate) {
-        this.lastChangedDate = lastChangedDate;
+        this.lastChangedDate = new Date(lastChangedDate.getTime());
     }
 
     /**
@@ -345,7 +349,10 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      */
 
     public java.util.Date getLastChangedDate() {
-        return this.lastChangedDate;
+        if (this.lastChangedDate == null) {
+            return null;
+        }
+        return new Date(this.lastChangedDate.getTime());
     }
 
     /**
@@ -375,7 +382,7 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      */
 
     public void setLastAccessedDate(java.util.Date lastAccessedDate) {
-        this.lastAccessedDate = lastAccessedDate;
+        this.lastAccessedDate = new Date(lastAccessedDate.getTime());
     }
 
     /**
@@ -389,7 +396,10 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      */
 
     public java.util.Date getLastAccessedDate() {
-        return this.lastAccessedDate;
+        if (this.lastAccessedDate == null) {
+            return null;
+        }
+        return new Date(this.lastAccessedDate.getTime());
     }
 
     /**
@@ -426,7 +436,7 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      */
 
     public void setDeletedDate(java.util.Date deletedDate) {
-        this.deletedDate = deletedDate;
+        this.deletedDate = new Date(deletedDate.getTime());
     }
 
     /**
@@ -445,7 +455,10 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      */
 
     public java.util.Date getDeletedDate() {
-        return this.deletedDate;
+        if (deletedDate == null) {
+            return null;
+        }
+        return new Date(this.deletedDate.getTime());
     }
 
     /**
@@ -732,7 +745,7 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      */
 
     public void setCreatedDate(java.util.Date createdDate) {
-        this.createdDate = createdDate;
+        this.createdDate = new Date(createdDate.getTime());
     }
 
     /**
@@ -744,7 +757,10 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      */
 
     public java.util.Date getCreatedDate() {
-        return this.createdDate;
+        if (this.createdDate == null) {
+            return null;
+        }
+        return new Date(this.createdDate.getTime());
     }
 
     /**

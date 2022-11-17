@@ -6,6 +6,8 @@ import hudson.model.Descriptor;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.CredentialsProvider;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.DefaultProcyonCredentialsProviderChain;
+import io.jenkins.plugins.credentials.secretsmanager.factory.ProcyonSecretsManager;
+import io.jenkins.plugins.credentials.secretsmanager.factory.ProcyonSecretsManagerClientBuilder;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;

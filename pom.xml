@@ -10,19 +10,19 @@
     </parent>
 
     <groupId>io.jenkins.plugins</groupId>
-    <artifactId>aws-secrets-manager-credentials-provider</artifactId>
+    <artifactId>procyon-secrets-manager-credentials-provider</artifactId>
     <version>${revision}.${changelist}</version>
     <packaging>hpi</packaging>
 
-    <name>AWS Secrets Manager Credentials Provider</name>
-    <description>Allows the Jenkins Credentials Store to look up secrets in AWS Secrets Manager.</description>
+    <name>Procyon Secrets Manager Credentials Provider</name>
+    <description>Allows the Jenkins Credentials Store to look up secrets in Procyon Secrets Manager.</description>
     <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
     <inceptionYear>2019</inceptionYear>
 
     <developers>
         <developer>
-            <id>chriskilding</id>
-            <name>Chris Kilding</name>
+            <id>Opelord</id>
+            <name>Maciej Palczyński</name>
         </developer>
     </developers>
 

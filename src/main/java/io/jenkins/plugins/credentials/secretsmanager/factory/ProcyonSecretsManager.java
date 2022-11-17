@@ -1,8 +1,9 @@
-package io.jenkins.plugins.credentials.secretsmanager.config;
+package io.jenkins.plugins.credentials.secretsmanager.factory;
 
-import com.amazonaws.AmazonWebServiceRequest;
-import com.amazonaws.ResponseMetadata;
-import com.amazonaws.services.secretsmanager.model.*;
+import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueRequest;
+import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueResult;
+import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsRequest;
+import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsResult;
 
 public interface ProcyonSecretsManager {
     String ENDPOINT_PREFIX = "secretsmanager";
@@ -25,7 +26,7 @@ public interface ProcyonSecretsManager {
 
     //ListSecretVersionIdsResult listSecretVersionIds(ListSecretVersionIdsRequest listSecretVersionIdsRequest);
 
-    //ListSecretsResult listSecrets(ListSecretsRequest listSecretsRequest);
+    ListSecretsResult listSecrets(ListSecretsRequest listSecretsRequest);
 
     //PutResourcePolicyResult putResourcePolicy(PutResourcePolicyRequest putResourcePolicyRequest);
 

@@ -6,15 +6,18 @@ import com.cloudbees.plugins.credentials.impl.BaseStandardCredentials;
 import hudson.Extension;
 import io.jenkins.plugins.credentials.secretsmanager.ProcyonCredentialsProvider;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
+import io.jenkins.plugins.credentials.secretsmanager.supplier.CredentialsSupplier;
 import org.jenkinsci.plugins.plaincredentials.FileCredentials;
 
 import javax.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 
 public class ProcyonFileCredentials extends BaseStandardCredentials implements FileCredentials {
 
+    private static final Logger LOG = Logger.getLogger(CredentialsSupplier.class.getName());
     @Nonnull
     private final String fileName;
 

@@ -2,6 +2,7 @@ package io.jenkins.plugins.credentials.secretsmanager.config;
 
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.DefaultProcyonCredentialsProviderChain;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProcyonCredentialsProvider;
+import io.jenkins.plugins.credentials.secretsmanager.factory.ProcyonGoClient;
 
 
 public abstract class ProcyonClientBuilder<Subclass extends ProcyonClientBuilder, TypeToBuild> {

@@ -6,6 +6,7 @@ import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.CredentialsStoreAction;
 import com.cloudbees.plugins.credentials.domains.Domain;
 
+import io.jenkins.plugins.credentials.secretsmanager.supplier.CredentialsSupplier;
 import org.acegisecurity.Authentication;
 import org.jenkins.ui.icon.Icon;
 import org.jenkins.ui.icon.IconSet;
@@ -14,6 +15,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 
@@ -25,7 +27,7 @@ import hudson.security.Permission;
 import jenkins.model.Jenkins;
 
 public class ProcyonCredentialsStore extends CredentialsStore {
-
+    private static final Logger LOG = Logger.getLogger(CredentialsSupplier.class.getName());
     private final ProcyonCredentialsProvider provider;
     private final DemoCredentialsStoreAction action = new DemoCredentialsStoreAction(this);
 
@@ -50,11 +52,15 @@ public class ProcyonCredentialsStore extends CredentialsStore {
     @Nonnull
     @Override
     public List<Credentials> getCredentials(@NonNull Domain domain) {
+        LOG.info("getting all credentials in ProcyonCredentialsStore");
         // Only the global domain is supported
         if (Domain.global().equals(domain)
                 && Jenkins.get().hasPermission(CredentialsProvider.VIEW)) {
+
+            LOG.info("returning all credentials in ProcyonCredentialsStore");
             return provider.getCredentials(Credentials.class, Jenkins.get(), ACL.SYSTEM);
         } else {
+            LOG.info("returning no credentials in ProcyonCredentialsStore");
             return Collections.emptyList();
         }
     }
@@ -62,7 +68,7 @@ public class ProcyonCredentialsStore extends CredentialsStore {
     @Override
     public boolean addCredentials(@Nonnull Domain domain, @Nonnull Credentials credentials) {
         throw new UnsupportedOperationException(
-                "Jenkins may not add credentials to AWS Secrets Manager");
+                "Jenkins may not add credentials to Procyon Secrets Manager");
     }
 
     @Override
