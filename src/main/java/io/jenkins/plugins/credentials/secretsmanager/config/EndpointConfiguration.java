@@ -1,11 +1,8 @@
 package io.jenkins.plugins.credentials.secretsmanager.config;
 
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.regions.Regions;
 import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
-import hudson.util.ListBoxModel;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -20,20 +17,14 @@ public class EndpointConfiguration extends AbstractDescribableImpl<EndpointConfi
     private static final long serialVersionUID = 1L;
 
     private String serviceEndpoint;
-    private String signingRegion;
 
     @DataBoundConstructor
-    public EndpointConfiguration(String serviceEndpoint, String signingRegion) {
+    public EndpointConfiguration(String serviceEndpoint) {
         this.serviceEndpoint = serviceEndpoint;
-        this.signingRegion = signingRegion;
     }
 
     public String getServiceEndpoint() {
         return serviceEndpoint;
-    }
-
-    public String getSigningRegion() {
-        return signingRegion;
     }
 
     @DataBoundSetter
@@ -42,15 +33,10 @@ public class EndpointConfiguration extends AbstractDescribableImpl<EndpointConfi
         this.serviceEndpoint = serviceEndpoint;
     }
 
-    @DataBoundSetter
     @SuppressWarnings("unused")
-    public void setSigningRegion(String signingRegion) {
-        this.signingRegion = signingRegion;
-    }
-
     @Override
     public String toString() {
-        return "Service Endpoint = " + serviceEndpoint + ", Signing Region = " + signingRegion;
+        return "Service Endpoint = " + serviceEndpoint;
     }
 
     @Override
@@ -58,21 +44,20 @@ public class EndpointConfiguration extends AbstractDescribableImpl<EndpointConfi
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EndpointConfiguration that = (EndpointConfiguration) o;
-        return Objects.equals(serviceEndpoint, that.serviceEndpoint) &&
-                Objects.equals(signingRegion, that.signingRegion);
+        return Objects.equals(serviceEndpoint, that.serviceEndpoint);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(serviceEndpoint, signingRegion);
+        return Objects.hash(serviceEndpoint);
     }
 
-    public AwsClientBuilder.EndpointConfiguration build() {
-        if (serviceEndpoint == null || signingRegion == null) {
+    public ProcyonClientBuilder.EndpointConfiguration build() {
+        if (serviceEndpoint == null) {
             return null;
         }
 
-        return new AwsClientBuilder.EndpointConfiguration(serviceEndpoint, signingRegion);
+        return new ProcyonClientBuilder.EndpointConfiguration(serviceEndpoint);
     }
 
     @Extension
@@ -84,15 +69,5 @@ public class EndpointConfiguration extends AbstractDescribableImpl<EndpointConfi
         public String getDisplayName() {
             return Messages.endpointConfiguration();
         }
-
-        public ListBoxModel doFillSigningRegionItems() {
-            final ListBoxModel regions = new ListBoxModel();
-            regions.add("", "");
-            for (Regions s : Regions.values()) {
-                regions.add(s.getDescription(), s.getName());
-            }
-            return regions;
-        }
-
     }
 }

@@ -24,6 +24,6 @@ public abstract class AbstractEndpointConfigurationIT {
 
         // Then
         assertThat(config.getClient().getEndpointConfiguration())
-                .isEqualTo(new EndpointConfiguration(serviceEndpoint, signingRegion));
+                .isEqualTo(new EndpointConfiguration(serviceEndpoint));
     }
 }

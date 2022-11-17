@@ -38,18 +38,4 @@ public class CasCCredentialsProviderIT extends AbstractCredentialsProviderIT {
     public void shouldSupportDefault() {
         super.shouldSupportDefault();
     }
-
-    @Override
-    @Test
-    @ConfiguredWithCode("/config/client/credentialsProvider/assumeRole.yml")
-    public void shouldSupportAssumeRole() {
-        super.shouldSupportAssumeRole();
-    }
-
-    @Override
-    @Test
-    @ConfiguredWithCode("/config/client/credentialsProvider/profile.yml")
-    public void shouldSupportProfile() {
-        super.shouldSupportProfile();
-    }
 }

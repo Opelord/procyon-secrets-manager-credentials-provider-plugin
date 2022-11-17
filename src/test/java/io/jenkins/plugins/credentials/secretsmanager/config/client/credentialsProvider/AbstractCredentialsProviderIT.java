@@ -2,9 +2,7 @@ package io.jenkins.plugins.credentials.secretsmanager.config.client.credentialsP
 
 import io.jenkins.plugins.credentials.secretsmanager.config.Client;
 import io.jenkins.plugins.credentials.secretsmanager.config.PluginConfiguration;
-import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.DefaultAWSCredentialsProviderChain;
-import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProfileCredentialsProvider;
-import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.STSAssumeRoleSessionCredentialsProvider;
+import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.DefaultProcyonCredentialsProviderChain;
 import io.jenkins.plugins.credentials.secretsmanager.util.assertions.CustomAssertions;
 import org.junit.Test;
 
@@ -32,35 +30,6 @@ public abstract class AbstractCredentialsProviderIT {
 
         // Then (it's allowed to be null or an instance of the default type)
         CustomAssertions.assertThat(Optional.ofNullable(config).map(PluginConfiguration::getClient).map(Client::getCredentialsProvider))
-                .isEmptyOrContains(new DefaultAWSCredentialsProviderChain());
-    }
-
-    @Test
-    public void shouldSupportAssumeRole() {
-        // Given
-        final String roleArn = "arn:aws:iam::111111111111:role/foo-role";
-        final String roleSessionName = "foo";
-        setCredentialsProvider(roleArn, roleSessionName);
-
-        // When
-        final PluginConfiguration config = getPluginConfiguration();
-
-        // Then
-        assertThat(config.getClient().getCredentialsProvider())
-                .isEqualTo(new STSAssumeRoleSessionCredentialsProvider(roleArn, roleSessionName));
-    }
-
-    @Test
-    public void shouldSupportProfile() {
-        // Given
-        final String profileName = "foo";
-        setCredentialsProvider(profileName);
-
-        // When
-        final PluginConfiguration config = getPluginConfiguration();
-
-        // Then
-        assertThat(config.getClient().getCredentialsProvider())
-                .isEqualTo(new ProfileCredentialsProvider(profileName));
+                .isEmptyOrContains(new DefaultProcyonCredentialsProviderChain());
     }
 }

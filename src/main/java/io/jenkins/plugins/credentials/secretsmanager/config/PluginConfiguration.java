@@ -1,6 +1,5 @@
 package io.jenkins.plugins.credentials.secretsmanager.config;
 
-import com.amazonaws.services.secretsmanager.model.FilterNameStringType;
 import hudson.Extension;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
@@ -9,9 +8,6 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.logging.Logger;
 
 @Extension
@@ -37,9 +33,6 @@ public class PluginConfiguration extends GlobalConfiguration {
     @Deprecated
     private transient EndpointConfiguration endpointConfiguration;
 
-    @Deprecated
-    private transient Filters filters;
-
     private ListSecrets listSecrets;
 
     private Transformations transformations;
@@ -60,23 +53,6 @@ public class PluginConfiguration extends GlobalConfiguration {
             LOG.config("CredentialsProvider cache disabled");
             return NO_CACHE;
         }
-    }
-
-    protected Object readResolve() {
-        if (endpointConfiguration != null) {
-            client = new Client(null, endpointConfiguration, null);
-            endpointConfiguration = null;
-        }
-
-        if (filters != null && filters.getTag() != null) {
-            final Tag tag = filters.getTag();
-            final Filter tagKey = new Filter(FilterNameStringType.TagKey.toString(), Collections.singletonList(new Value(tag.getKey())));
-            final Filter tagValue = new Filter(FilterNameStringType.TagValue.toString(), Collections.singletonList(new Value(tag.getValue())));
-            final List<Filter> filters = Arrays.asList(tagKey, tagValue);
-            listSecrets = new ListSecrets(filters);
-        }
-
-        return this;
     }
 
     public Boolean getCache() {

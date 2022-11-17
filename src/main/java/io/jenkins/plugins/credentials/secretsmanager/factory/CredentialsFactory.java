@@ -1,20 +1,18 @@
 package io.jenkins.plugins.credentials.secretsmanager.factory;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.secretsmanager.AWSSecretsManager;
-import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
-import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.cloudbees.plugins.credentials.CredentialsUnavailableException;
 import com.cloudbees.plugins.credentials.SecretBytes;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.util.Secret;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
-import io.jenkins.plugins.credentials.secretsmanager.factory.certificate.AwsCertificateCredentials;
-import io.jenkins.plugins.credentials.secretsmanager.factory.file.AwsFileCredentials;
-import io.jenkins.plugins.credentials.secretsmanager.factory.ssh_user_private_key.AwsSshUserPrivateKey;
-import io.jenkins.plugins.credentials.secretsmanager.factory.string.AwsStringCredentials;
-import io.jenkins.plugins.credentials.secretsmanager.factory.username_password.AwsUsernamePasswordCredentials;
+import io.jenkins.plugins.credentials.secretsmanager.factory.certificate.ProcyonCertificateCredentials;
+import io.jenkins.plugins.credentials.secretsmanager.factory.file.ProcyonFileCredentials;
+import io.jenkins.plugins.credentials.secretsmanager.factory.ssh_user_private_key.ProcyonSshUserPrivateKey;
+import io.jenkins.plugins.credentials.secretsmanager.factory.string.ProcyonStringCredentials;
+import io.jenkins.plugins.credentials.secretsmanager.factory.username_password.ProcyonUsernamePasswordCredentials;
+import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueRequest;
+import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueResult;
 
 import java.util.Map;
 import java.util.Optional;
@@ -30,28 +28,28 @@ public abstract class CredentialsFactory {
     /**
      * Construct a Jenkins credential from a Secrets Manager secret.
      *
-     * @param name the secret's name (must be unique within the AWS account)
+     * @param name the secret's name (must be unique within the Procyon account)
      * @param description the secret's description
-     * @param tags the secret's AWS tags
+     * @param tags the secret's Procyon tags
      * @param client the Secrets Manager client that will retrieve the secret's value on demand
      * @return a credential (if one could be constructed from the secret's properties)
      */
-    public static Optional<StandardCredentials> create(String arn, String name, String description, Map<String, String> tags, AWSSecretsManager client) {
+    public static Optional<StandardCredentials> create(Integer id, String name, String description, Map<String, String> tags, ProcyonSecretsManager client) {
         final String type = tags.getOrDefault(Tags.type, "");
         final String username = tags.getOrDefault(Tags.username, "");
         final String filename = tags.getOrDefault(Tags.filename, name);
 
         switch (type) {
             case Type.string:
-                return Optional.of(new AwsStringCredentials(name, description, new SecretSupplier(client, arn)));
+                return Optional.of(new ProcyonStringCredentials(name, description, new SecretSupplier(client, id)));
             case Type.usernamePassword:
-                return Optional.of(new AwsUsernamePasswordCredentials(name, description, new SecretSupplier(client, arn), username));
+                return Optional.of(new ProcyonUsernamePasswordCredentials(name, description, new SecretSupplier(client, id), username));
             case Type.sshUserPrivateKey:
-                return Optional.of(new AwsSshUserPrivateKey(name, description, new StringSupplier(client, arn), username));
+                return Optional.of(new ProcyonSshUserPrivateKey(name, description, new StringSupplier(client, id), username));
             case Type.certificate:
-                return Optional.of(new AwsCertificateCredentials(name, description, new SecretBytesSupplier(client, arn)));
+                return Optional.of(new ProcyonCertificateCredentials(name, description, new SecretBytesSupplier(client, id)));
             case Type.file:
-                return Optional.of(new AwsFileCredentials(name, description, filename, new SecretBytesSupplier(client, arn)));
+                return Optional.of(new ProcyonFileCredentials(name, description, filename, new SecretBytesSupplier(client, id)));
             default:
                 return Optional.empty();
         }
@@ -59,8 +57,8 @@ public abstract class CredentialsFactory {
 
     private static class SecretBytesSupplier extends RealSecretsManager implements Supplier<SecretBytes> {
 
-        private SecretBytesSupplier(AWSSecretsManager client, String name) {
-            super(client, name);
+        private SecretBytesSupplier(ProcyonSecretsManager client, Integer id) {
+            super(client, id);
         }
 
         @Override
@@ -81,8 +79,8 @@ public abstract class CredentialsFactory {
 
     private static class SecretSupplier extends RealSecretsManager implements Supplier<Secret> {
 
-        private SecretSupplier(AWSSecretsManager client, String name) {
-            super(client, name);
+        private SecretSupplier(ProcyonSecretsManager client, Integer id) {
+            super(client, id);
         }
 
         @Override
@@ -103,8 +101,8 @@ public abstract class CredentialsFactory {
 
     private static class StringSupplier extends RealSecretsManager implements Supplier<String> {
 
-        private StringSupplier(AWSSecretsManager client, String name) {
-            super(client, name);
+        private StringSupplier(ProcyonSecretsManager client, Integer id) {
+            super(client, id);
         }
 
         @Override
@@ -127,10 +125,10 @@ public abstract class CredentialsFactory {
 
         private static final Logger LOG = Logger.getLogger(RealSecretsManager.class.getName());
 
-        private final String id;
-        private final transient AWSSecretsManager client;
+        private final Integer id;
+        private final transient ProcyonSecretsManager client;
 
-        RealSecretsManager(AWSSecretsManager client, String id) {
+        RealSecretsManager(ProcyonSecretsManager client, Integer id) {
             this.client = client;
             this.id = id;
         }
@@ -138,16 +136,18 @@ public abstract class CredentialsFactory {
         @NonNull
         SecretValue getSecretValue() {
             try {
+                LOG.info("Getting secret binary");
                 final GetSecretValueResult result = client.getSecretValue(new GetSecretValueRequest().withSecretId(id));
                 if (result.getSecretBinary() != null) {
-                    return SecretValue.binary(result.getSecretBinary().array());
+                    return SecretValue.binary(result.getSecretBinary());
                 }
                 if (result.getSecretString() != null) {
                     return SecretValue.string(result.getSecretString());
                 }
+
                 throw new IllegalStateException(Messages.emptySecretError(id));
-            } catch (AmazonClientException ex) {
-                LOG.warning("AWS Secrets Manager retrieval error");
+            } catch (IllegalStateException ex) {
+                LOG.warning("Procyon Secrets Manager retrieval error");
                 LOG.warning(ex.getMessage());
 
                 throw new CredentialsUnavailableException("secret", Messages.couldNotRetrieveCredentialError(id));
