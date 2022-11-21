@@ -32,7 +32,6 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
 
     @Override
     public Collection<StandardCredentials> get() {
-        LOG.log(Level.FINE,"Retrieve secrets from Secrets Manager");
 
         final PluginConfiguration config = PluginConfiguration.getInstance();
 
@@ -45,17 +44,23 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
         LOG.info("Getting secrets list");
         final Collection<SecretListEntry> secretList = listSecretsOperation.get();
 
-        return secretList.stream()
+        Collection<StandardCredentials> result = secretList.stream()
                 .flatMap(secretListEntry -> {
                     final Integer id = secretListEntry.getID();
                     LOG.log(Level.INFO, "Got secret list entry ID = {0}", id);
                     final String name = secretListEntry.getName();
                     final String description = secretListEntry.getDescription();
                     final Map<String, String> tags = Lists.toMap(secretListEntry.getTags(), Tag::getKey, Tag::getValue);
+                    LOG.log(Level.INFO, "Got tags in secret list entry {0}", tags);
                     final Optional<StandardCredentials> cred = CredentialsFactory.create(id, name, description, tags, client);
+                    LOG.log(Level.INFO, "Credential Supplier: credentials before list: {0}", cred);
                     return Optionals.stream(cred);
                 })
                 .collect(Collectors.toList());
+
+        LOG.log(Level.INFO, "Got secret list in CredentialSupplier: {0}", result);
+
+        return result;
     }
 
     private static Collection<Filter> createListSecretsFilters(PluginConfiguration config) {

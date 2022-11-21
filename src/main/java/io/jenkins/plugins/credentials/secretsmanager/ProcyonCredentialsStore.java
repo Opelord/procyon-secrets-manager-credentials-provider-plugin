@@ -96,7 +96,7 @@ public class ProcyonCredentialsStore extends CredentialsStore {
     @ExportedBean
     public static class DemoCredentialsStoreAction extends CredentialsStoreAction {
 
-        private static final String ICON_CLASS = "icon-aws-secrets-manager-credentials-store";
+        private static final String ICON_CLASS = "icon-procyon-secrets-manager-credentials-store";
 
         private final ProcyonCredentialsStore store;
 
@@ -107,16 +107,16 @@ public class ProcyonCredentialsStore extends CredentialsStore {
 
         private void addIcons() {
             IconSet.icons.addIcon(new Icon(ICON_CLASS + " icon-sm",
-                    "aws-secrets-manager-credentials-provider/images/16x16/icon.png",
+                    "procyon-secrets-manager-credentials-provider/images/16x16/icon.png",
                     Icon.ICON_SMALL_STYLE, IconType.PLUGIN));
             IconSet.icons.addIcon(new Icon(ICON_CLASS + " icon-md",
-                    "aws-secrets-manager-credentials-provider/images/24x24/icon.png",
+                    "procyon-secrets-manager-credentials-provider/images/24x24/icon.png",
                     Icon.ICON_MEDIUM_STYLE, IconType.PLUGIN));
             IconSet.icons.addIcon(new Icon(ICON_CLASS + " icon-lg",
-                    "aws-secrets-manager-credentials-provider/images/32x32/icon.png",
+                    "procyon-secrets-manager-credentials-provider/images/32x32/icon.png",
                     Icon.ICON_LARGE_STYLE, IconType.PLUGIN));
             IconSet.icons.addIcon(new Icon(ICON_CLASS + " icon-xlg",
-                    "aws-secrets-manager-credentials-provider/images/48x48/icon.png",
+                    "procyon-secrets-manager-credentials-provider/images/48x48/icon.png",
                     Icon.ICON_XLARGE_STYLE, IconType.PLUGIN));
         }
 
@@ -129,7 +129,7 @@ public class ProcyonCredentialsStore extends CredentialsStore {
         @Override
         public String getIconFileName() {
             return isVisible()
-                    ? "/plugin/aws-secrets-manager-credentials-provider/images/32x32/icon.png"
+                    ? "/plugin/procyon-secrets-manager-credentials-provider/images/32x32/icon.png"
                     : null;
         }
 

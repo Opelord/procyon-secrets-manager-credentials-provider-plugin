@@ -57,12 +57,14 @@ public abstract class CredentialsFactory {
 
     private static class SecretBytesSupplier extends RealSecretsManager implements Supplier<SecretBytes> {
 
+        private static final Logger LOG = Logger.getLogger(SecretBytesSupplier.class.getName());
         private SecretBytesSupplier(ProcyonSecretsManager client, Integer id) {
             super(client, id);
         }
 
         @Override
         public SecretBytes get() {
+            LOG.info("getting secret bytes in SecretBytesSupplier");
             return getSecretValue().match(new SecretValue.Matcher<SecretBytes>() {
                 @Override
                 public SecretBytes string(String str) {
@@ -79,12 +81,14 @@ public abstract class CredentialsFactory {
 
     private static class SecretSupplier extends RealSecretsManager implements Supplier<Secret> {
 
+        private static final Logger LOG = Logger.getLogger(SecretSupplier.class.getName());
         private SecretSupplier(ProcyonSecretsManager client, Integer id) {
             super(client, id);
         }
 
         @Override
         public Secret get() {
+            LOG.info("getting secret in SecretSupplier");
             return getSecretValue().match(new SecretValue.Matcher<Secret>() {
                 @Override
                 public Secret string(String str) {
@@ -101,12 +105,14 @@ public abstract class CredentialsFactory {
 
     private static class StringSupplier extends RealSecretsManager implements Supplier<String> {
 
+        private static final Logger LOG = Logger.getLogger(StringSupplier.class.getName());
         private StringSupplier(ProcyonSecretsManager client, Integer id) {
             super(client, id);
         }
 
         @Override
         public String get() {
+            LOG.info("getting string in String Supplier");
             return getSecretValue().match(new SecretValue.Matcher<String>() {
                 @Override
                 public String string(String str) {
