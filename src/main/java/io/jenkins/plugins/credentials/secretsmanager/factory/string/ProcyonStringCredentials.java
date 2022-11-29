@@ -6,12 +6,10 @@ import hudson.Extension;
 import hudson.util.Secret;
 import io.jenkins.plugins.credentials.secretsmanager.ProcyonCredentialsProvider;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
-import io.jenkins.plugins.credentials.secretsmanager.supplier.CredentialsSupplier;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 
 public class ProcyonStringCredentials extends BaseStandardCredentials implements StringCredentials {
 

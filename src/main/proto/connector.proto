@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package model;
+
+option go_package = "model/proto";
+option java_package = "com.ai.procyon.jenkins.grpc.agent.proto";
+
+import "messages.proto";
+
+service Connector {
+  rpc ListSecrets(ListSecretsRequest) returns (ListSecretsResponse) {}
+  rpc GetSecret(GetSecretRequest) returns (GetSecretResponse) {}
+}
+
