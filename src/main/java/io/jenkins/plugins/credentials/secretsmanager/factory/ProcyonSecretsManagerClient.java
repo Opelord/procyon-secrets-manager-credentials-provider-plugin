@@ -44,6 +44,9 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
 
     @Override
     public ListSecretsResult listSecrets(ListSecretsRequest listSecretsRequest) {
+        LOG.info("Trying grpc connection");
+        this.client.getSecretValue(1);
+
         LOG.info("Trying to list secrets result");
         com.amazonaws.services.secretsmanager.model.Tag fileNameTag = new Tag().withKey(Tags.filename).withValue("gcp_creds.json");
         com.amazonaws.services.secretsmanager.model.Tag typeTag = new Tag().withKey(Tags.type).withValue(Type.file);

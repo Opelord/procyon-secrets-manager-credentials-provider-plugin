@@ -5,8 +5,11 @@ import java.net.URISyntaxException;
 
 import com.amazonaws.annotation.SdkProtectedApi;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import io.grpc.Channel;
+import io.grpc.Grpc;
+import io.grpc.InsecureChannelCredentials;
 import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfiguration;
-import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonHttpClient;
+import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonGrpcClient;
 import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientParams;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProcyonCredentialsProvider;
 import org.apache.commons.logging.Log;
@@ -44,7 +47,11 @@ public abstract class ProcyonGoClient {
     /** The client configuration */
     protected ClientConfiguration clientConfiguration;
 
-    protected ProcyonHttpClient client;
+    protected ProcyonGrpcClient client;
+
+    protected Channel channel;
+
+    public  Boolean successfullyCreated;
 
     ProcyonGoClient(ClientConfiguration clientConfiguration) {
         ProcyonSyncClientParams clientParams = new ProcyonSyncClientParams() {
@@ -61,7 +68,10 @@ public abstract class ProcyonGoClient {
         
         this.clientConfiguration = clientParams.getClientConfiguration();
 
-        this.client = new ProcyonHttpClient(clientConfiguration);
+        log.info("Creating gRPC Channel");
+        String target = "localhost:50051";
+        this.channel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create()).build();
+        this.client = new ProcyonGrpcClient(channel);
     }
 
     /**
