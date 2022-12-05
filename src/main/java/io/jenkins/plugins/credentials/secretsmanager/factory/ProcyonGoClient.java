@@ -69,7 +69,7 @@ public abstract class ProcyonGoClient {
         this.clientConfiguration = clientParams.getClientConfiguration();
 
         log.info("Creating gRPC Channel");
-        String target = "localhost:50051";
+        String target = "10.128.0.18:8080";
         this.channel = Grpc.newChannelBuilder(target, InsecureChannelCredentials.create()).build();
         this.client = new ProcyonGrpcClient(channel);
     }
