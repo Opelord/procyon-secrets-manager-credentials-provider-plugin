@@ -1,5 +1,6 @@
 package io.jenkins.plugins.credentials.secretsmanager.factory;
 
+import com.ai.procyon.jenkins.grpc.agent.GetSecretResponse;
 import com.cloudbees.plugins.credentials.CredentialsUnavailableException;
 import com.cloudbees.plugins.credentials.SecretBytes;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
@@ -17,6 +18,7 @@ import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueResult;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class CredentialsFactory {
@@ -143,14 +145,14 @@ public abstract class CredentialsFactory {
         SecretValue getSecretValue() {
             try {
                 LOG.info("Getting secret binary");
-                final GetSecretValueResult result = client.getSecretValue(new GetSecretValueRequest().withSecretId(id));
-                if (result.getSecretBinary() != null) {
-                    return SecretValue.binary(result.getSecretBinary());
+                final GetSecretResponse response = client.getSecretValue(id);
+                LOG.log(Level.WARNING, "1 - has secret, 0 - secret is NULL: {0}", response.hasSecret());
+                com.ai.procyon.jenkins.grpc.agent.Secret secret = response.getSecret();
+                String type = secret.getType();
+                switch (type) {
+                    case Type.file:
+                        return SecretValue.binary(response.getSecret().getFile().getFileContent().toByteArray());
                 }
-                if (result.getSecretString() != null) {
-                    return SecretValue.string(result.getSecretString());
-                }
-
                 throw new IllegalStateException(Messages.emptySecretError(id));
             } catch (IllegalStateException ex) {
                 LOG.warning("Procyon Secrets Manager retrieval error");

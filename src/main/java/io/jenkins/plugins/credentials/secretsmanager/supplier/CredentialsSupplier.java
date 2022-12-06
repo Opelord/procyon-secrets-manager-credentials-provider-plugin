@@ -4,10 +4,7 @@ import com.amazonaws.services.secretsmanager.model.Filter;
 import com.amazonaws.services.secretsmanager.model.Tag;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import io.jenkins.plugins.credentials.secretsmanager.FiltersFactory;
-import io.jenkins.plugins.credentials.secretsmanager.config.Client;
-import io.jenkins.plugins.credentials.secretsmanager.config.ListSecrets;
-import io.jenkins.plugins.credentials.secretsmanager.config.PluginConfiguration;
-import io.jenkins.plugins.credentials.secretsmanager.config.Transformations;
+import io.jenkins.plugins.credentials.secretsmanager.config.*;
 import io.jenkins.plugins.credentials.secretsmanager.factory.CredentialsFactory;
 import io.jenkins.plugins.credentials.secretsmanager.factory.ProcyonSecretsManager;
 import io.jenkins.plugins.credentials.secretsmanager.model.SecretListEntry;
@@ -72,8 +69,9 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
     }
 
     private static ProcyonSecretsManager createClient(PluginConfiguration config) {
+        final EndpointConfiguration endpointConfig = config.getEndpointConfiguration();
         final Client clientConfig = Optional.ofNullable(config.getClient())
-                .orElse(new Client(null, null));
+                .orElse(new Client(null, endpointConfig));
 
         return clientConfig.build();
     }

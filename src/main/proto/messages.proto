@@ -9,14 +9,14 @@ option java_multiple_files = true;
 option java_package = "com.ai.procyon.jenkins.grpc.agent";
 
 message Secret {
-  string type = 1;
-  File   file = 2;
+  uint32 id   = 1;
+  string type = 2;
+  File   file = 3;
 }
 
 message File {
-  uint32 id          = 1;
   string fileName    = 2;
-  string fileContent = 3;
+  bytes  fileContent = 3;
 }
 
 message GetSecretRequest {
