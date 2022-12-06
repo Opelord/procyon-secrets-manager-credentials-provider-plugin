@@ -18,16 +18,18 @@ public class ProcyonGrpcClient {
         blockingStub = ConnectorGrpc.newBlockingStub(channel);
     }
 
-    public void getSecretValue(Integer ID) {
+    public GetSecretResponse getSecretValue(Integer ID) {
         logger.log(Level.INFO, "gRPC GetSecretValue invoked");
         GetSecretRequest request = GetSecretRequest.newBuilder().setId(ID).build();
         GetSecretResponse response;
         try {
             response = blockingStub.getSecret(request);
+            logger.info("gRPC Response: " + response.getSecret().getType());
+            return response;
         } catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed {0}", e.getStatus());
-            return;
+            logger.log(Level.WARNING, "gRPC failed {0}", e.getStatus());
         }
-        logger.info("GRPC Response: " + response.getSecret().getType());
+
+        return null;
     }
 }

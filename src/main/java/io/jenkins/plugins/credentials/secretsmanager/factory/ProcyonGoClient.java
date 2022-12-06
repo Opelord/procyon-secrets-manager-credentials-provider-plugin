@@ -51,8 +51,6 @@ public abstract class ProcyonGoClient {
 
     protected Channel channel;
 
-    public  Boolean successfullyCreated;
-
     ProcyonGoClient(ClientConfiguration clientConfiguration) {
         ProcyonSyncClientParams clientParams = new ProcyonSyncClientParams() {
             @Override
@@ -104,7 +102,7 @@ public abstract class ProcyonGoClient {
      * @deprecated use {@link AwsClientBuilder#setEndpointConfiguration(AwsClientBuilder.EndpointConfiguration)} for example:
      * {@code builder.setEndpointConfiguration(new EndpointConfiguration(endpoint, signingRegion));}
      */
-    @Deprecated
+
     public void setEndpoint(String endpoint) throws IllegalArgumentException {
         checkMutability();
         URI uri = toURI(endpoint);

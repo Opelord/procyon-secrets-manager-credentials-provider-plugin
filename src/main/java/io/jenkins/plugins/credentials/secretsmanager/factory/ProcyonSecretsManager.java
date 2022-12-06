@@ -1,9 +1,9 @@
 package io.jenkins.plugins.credentials.secretsmanager.factory;
 
-import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueRequest;
-import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueResult;
 import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsRequest;
 import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsResult;
+import com.ai.procyon.jenkins.grpc.agent.GetSecretRequest;
+import com.ai.procyon.jenkins.grpc.agent.GetSecretResponse;
 
 public interface ProcyonSecretsManager {
     String ENDPOINT_PREFIX = "secretsmanager";
@@ -22,7 +22,7 @@ public interface ProcyonSecretsManager {
 
     //GetResourcePolicyResult getResourcePolicy(GetResourcePolicyRequest getResourcePolicyRequest);
 
-    GetSecretValueResult getSecretValue(GetSecretValueRequest getSecretValueRequest);
+    GetSecretResponse getSecretValue(Integer ID);
 
     //ListSecretVersionIdsResult listSecretVersionIds(ListSecretVersionIdsRequest listSecretVersionIdsRequest);
 

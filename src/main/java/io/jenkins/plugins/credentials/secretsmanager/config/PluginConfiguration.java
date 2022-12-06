@@ -30,7 +30,6 @@ public class PluginConfiguration extends GlobalConfiguration {
      */
     private Client client;
 
-    @Deprecated
     private transient EndpointConfiguration endpointConfiguration;
 
     private ListSecrets listSecrets;
@@ -111,5 +110,14 @@ public class PluginConfiguration extends GlobalConfiguration {
         req.bindJSON(this, json);
         save();
         return true;
+    }
+
+    public EndpointConfiguration getEndpointConfiguration() {
+        return endpointConfiguration;
+    }
+
+    public void setEndpointConfiguration(EndpointConfiguration endpointConfiguration) {
+        this.endpointConfiguration = endpointConfiguration;
+        save();
     }
 }

@@ -4,7 +4,10 @@ import com.amazonaws.services.secretsmanager.model.Tag;
 import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfigurationFactory;
 import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientParams;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProcyonCredentialsProvider;
-import io.jenkins.plugins.credentials.secretsmanager.model.*;
+import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsResult;
+import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsRequest;
+import io.jenkins.plugins.credentials.secretsmanager.model.SecretListEntry;
+import com.ai.procyon.jenkins.grpc.agent.GetSecretResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -28,24 +31,22 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
     }
 
     @Override
-    public GetSecretValueResult getSecretValue(GetSecretValueRequest request) {
+    public GetSecretResponse getSecretValue(Integer ID) {
         LOG.info("Trying to get secret value result");
-        try {
-            java.io.File jenkinsGCEJson = new java.io.File("jenkins-gce.json");
-            byte[] byteCreds = org.apache.commons.io.FileUtils.readFileToByteArray(jenkinsGCEJson);
-            return new GetSecretValueResult().withID(1).withName("test-gcp-service-account")
-                    .withSecretBinary(byteCreds);
-        } catch (IOException e) {
-            LOG.info("Couldn't read file", e);
-            return null;
-        }
-
+//        try {
+//            java.io.File jenkinsGCEJson = new java.io.File("jenkins-gce.json");
+//            byte[] byteCreds = org.apache.commons.io.FileUtils.readFileToByteArray(jenkinsGCEJson);
+//            return new GetSecretValueResult().withID(1).withName("test-gcp-service-account")
+//                    .withSecretBinary(byteCreds);
+//        } catch (IOException e) {
+//            LOG.info("Couldn't read file", e);
+//            return null;
+//        }
+        return this.client.getSecretValue(ID);
     }
 
     @Override
     public ListSecretsResult listSecrets(ListSecretsRequest listSecretsRequest) {
-        LOG.info("Trying grpc connection");
-        this.client.getSecretValue(1);
 
         LOG.info("Trying to list secrets result");
         com.amazonaws.services.secretsmanager.model.Tag fileNameTag = new Tag().withKey(Tags.filename).withValue("gcp_creds.json");
