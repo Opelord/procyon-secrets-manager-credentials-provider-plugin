@@ -29,7 +29,7 @@ import jenkins.model.Jenkins;
 public class ProcyonCredentialsStore extends CredentialsStore {
     private static final Logger LOG = Logger.getLogger(CredentialsSupplier.class.getName());
     private final ProcyonCredentialsProvider provider;
-    private final DemoCredentialsStoreAction action = new DemoCredentialsStoreAction(this);
+    private final ProcyonCredentialsStoreAction action = new ProcyonCredentialsStoreAction(this);
 
     public ProcyonCredentialsStore(ProcyonCredentialsProvider provider) {
         super(ProcyonCredentialsProvider.class);
@@ -94,13 +94,13 @@ public class ProcyonCredentialsStore extends CredentialsStore {
      * Expose the store.
      */
     @ExportedBean
-    public static class DemoCredentialsStoreAction extends CredentialsStoreAction {
+    public static class ProcyonCredentialsStoreAction extends CredentialsStoreAction {
 
         private static final String ICON_CLASS = "icon-procyon-secrets-manager-credentials-store";
 
         private final ProcyonCredentialsStore store;
 
-        private DemoCredentialsStoreAction(ProcyonCredentialsStore store) {
+        private ProcyonCredentialsStoreAction(ProcyonCredentialsStore store) {
             this.store = store;
             addIcons();
         }

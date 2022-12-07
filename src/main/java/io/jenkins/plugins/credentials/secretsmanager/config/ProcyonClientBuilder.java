@@ -34,7 +34,7 @@ public abstract class ProcyonClientBuilder<Subclass extends ProcyonClientBuilder
 
     final TypeToBuild configureMutableProperties(TypeToBuild clientInterface) {
         ProcyonGoClient client = (ProcyonGoClient) clientInterface;
-        client.setEndpoint(endpointConfiguration.serviceEndpoint);
+        client.makeImmutable();
         return clientInterface;
     }
 

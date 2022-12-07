@@ -146,6 +146,9 @@ public abstract class CredentialsFactory {
             try {
                 LOG.info("Getting secret binary");
                 final GetSecretResponse response = client.getSecretValue(id);
+                if (response == null) {
+                    throw new IllegalStateException(Messages.emptySecretError(id));
+                }
                 LOG.log(Level.WARNING, "1 - has secret, 0 - secret is NULL: {0}", response.hasSecret());
                 com.ai.procyon.jenkins.grpc.agent.Secret secret = response.getSecret();
                 String type = secret.getType();

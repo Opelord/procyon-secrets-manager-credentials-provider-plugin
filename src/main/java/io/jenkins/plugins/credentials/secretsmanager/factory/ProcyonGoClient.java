@@ -4,12 +4,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.amazonaws.annotation.SdkProtectedApi;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import io.grpc.Channel;
-import io.grpc.Grpc;
-import io.grpc.InsecureChannelCredentials;
 import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfiguration;
-import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonGrpcClient;
+import io.jenkins.plugins.credentials.secretsmanager.config.EndpointConfiguration;
 import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientParams;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProcyonCredentialsProvider;
 import org.apache.commons.logging.Log;
@@ -44,14 +40,11 @@ public abstract class ProcyonGoClient {
      */
     protected volatile boolean isEndpointOverridden = false;
 
-    /** The client configuration */
     protected ClientConfiguration clientConfiguration;
 
-    protected ProcyonGrpcClient client;
+    /** The client configuration */
 
-    protected Channel channel;
-
-    ProcyonGoClient(ClientConfiguration clientConfiguration) {
+    ProcyonGoClient(ClientConfiguration clientConfiguration, String serviceEndpoint) {
         ProcyonSyncClientParams clientParams = new ProcyonSyncClientParams() {
             @Override
             public ProcyonCredentialsProvider getCredentialsProvider() {
@@ -63,12 +56,9 @@ public abstract class ProcyonGoClient {
                 return clientConfiguration;
             }
         };
-        
-        this.clientConfiguration = clientParams.getClientConfiguration();
 
-        log.info("Creating gRPC Channel");
-        this.channel = Grpc.newChannelBuilder(this.endpoint.toString(), InsecureChannelCredentials.create()).build();
-        this.client = new ProcyonGrpcClient(channel);
+        this.clientConfiguration = clientParams.getClientConfiguration();
+        this.setEndpoint(serviceEndpoint);
     }
 
     /**
@@ -97,9 +87,6 @@ public abstract class ProcyonGoClient {
      *            with.
      * @throws IllegalArgumentException
      *             If any problems are detected with the specified endpoint.
-     *
-     * @deprecated use {@link AwsClientBuilder#setEndpointConfiguration(AwsClientBuilder.EndpointConfiguration)} for example:
-     * {@code builder.setEndpointConfiguration(new EndpointConfiguration(endpoint, signingRegion));}
      */
 
     public void setEndpoint(String endpoint) throws IllegalArgumentException {
@@ -148,9 +135,5 @@ public abstract class ProcyonGoClient {
             throw new UnsupportedOperationException(
                     "Client is immutable when created with the builder.");
         }
-    }
-
-    public ClientConfiguration getClientConfiguration() {
-        return new ClientConfiguration(clientConfiguration);
     }
 }

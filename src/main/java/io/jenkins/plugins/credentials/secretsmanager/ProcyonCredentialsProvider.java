@@ -55,7 +55,6 @@ public class ProcyonCredentialsProvider extends CredentialsProvider {
                     .map(type::cast)
                     .collect(Collectors.toList());
         }
-        LOG.info("returning empty list in ProcyonCredentialsProvider");
         return Collections.emptyList();
     }
 
@@ -66,7 +65,7 @@ public class ProcyonCredentialsProvider extends CredentialsProvider {
 
     @Override
     public String getIconClassName() {
-        return "";
+        return "icon-procyon-secrets-manager-credentials-store";
     }
 
     private static <T> Supplier<T> memoizeWithExpiration(Supplier<T> base, Supplier<Duration> duration) {
