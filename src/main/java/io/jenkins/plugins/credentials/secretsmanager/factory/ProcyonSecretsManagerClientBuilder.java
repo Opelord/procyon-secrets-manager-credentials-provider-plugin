@@ -21,7 +21,7 @@ public final class ProcyonSecretsManagerClientBuilder extends ProcyonSyncClientB
     }
 
     @Override
-    protected ProcyonSecretsManager build(ProcyonSyncClientParams clientParams) {
-        return new ProcyonSecretsManagerClient(clientParams);
+    protected ProcyonSecretsManager build(ProcyonSyncClientParams clientParams, EndpointConfiguration endpointConfiguration) {
+        return new ProcyonSecretsManagerClient(clientParams, endpointConfiguration.getServiceEndpoint());
     }
 }

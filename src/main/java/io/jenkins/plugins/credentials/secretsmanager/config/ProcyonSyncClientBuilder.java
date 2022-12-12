@@ -21,14 +21,15 @@ public abstract class ProcyonSyncClientBuilder<Subclass extends ProcyonSyncClien
 
     @Override
     public final TypeToBuild build() {
-        return configureMutableProperties(build(getSyncClientParams()));
+        return configureMutableProperties(build(getSyncClientParams(), getEndpoint()));
     }
 
     /**
      * Overriden by subclasses to call the client constructor.
      *
      * @param clientParams Client Params to create client with
+     * @param
      * @return Built client.
      */
-    protected abstract TypeToBuild build(ProcyonSyncClientParams clientParams);
+    protected abstract TypeToBuild build(ProcyonSyncClientParams clientParams, EndpointConfiguration endpointConfiguration);
 }

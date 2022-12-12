@@ -8,6 +8,7 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.time.Duration;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Extension
