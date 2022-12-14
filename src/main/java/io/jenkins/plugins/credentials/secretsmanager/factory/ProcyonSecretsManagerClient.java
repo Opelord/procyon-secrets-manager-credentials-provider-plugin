@@ -46,6 +46,8 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
         } catch (StatusRuntimeException e) {
             String message = new Formatter().format("gRPC failed %S", e.getStatus()).toString();
             LOG.info(message);
+        } finally {
+            shutdown();
         }
 
         return null;
