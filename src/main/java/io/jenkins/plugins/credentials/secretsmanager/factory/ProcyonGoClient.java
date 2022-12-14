@@ -62,12 +62,7 @@ public abstract class ProcyonGoClient {
         };
 
         this.clientConfiguration = clientParams.getClientConfiguration();
-        this.setEndpoint(serviceEndpoint);
-
-        if (channel != null) {
-            channel.shutdown();
-        }
-        channel = Grpc.newChannelBuilder(endpoint.toString(), InsecureChannelCredentials.create()).build();
+        this.channel = Grpc.newChannelBuilder(serviceEndpoint, InsecureChannelCredentials.create()).build();
     }
 
     /**
