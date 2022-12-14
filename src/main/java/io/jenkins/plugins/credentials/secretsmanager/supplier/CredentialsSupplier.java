@@ -69,18 +69,6 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
     }
 
     private static ProcyonSecretsManager createClient(PluginConfiguration config) {
-//        final ProcyonSecretsManagerClientBuilder builder = ProcyonSecretsManagerClientBuilder.standard();
-//        final Optional<ProcyonClientBuilder.EndpointConfiguration> endpointConfig = Optional.ofNullable(config.getEndpointConfiguration())
-//                .map(EndpointConfiguration::build);
-//        endpointConfig.ifPresent(builder::setEndpointConfiguration);
-//
-//        return builder.build();
-
-//        final EndpointConfiguration endpointConfig = new EndpointConfiguration(config.getEndpointConfiguration().getServiceEndpoint());
-//        final Client clientConfig = Optional.ofNullable(config.getClient())
-//                .orElse(new Client(null, endpointConfig));
-//
-//        return clientConfig.build();
         EndpointConfiguration ec = config.getEndpointConfiguration();
         try {
             final Client clientConfig = Optional.ofNullable(config.getClient())

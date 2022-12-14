@@ -33,21 +33,11 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
     @Override
     public GetSecretResponse getSecretValue(Integer ID) {
         LOG.info("Trying to get secret value result");
-//        try {
-//            java.io.File jenkinsGCEJson = new java.io.File("jenkins-gce.json");
-//            byte[] byteCreds = org.apache.commons.io.FileUtils.readFileToByteArray(jenkinsGCEJson);
-//            return new GetSecretValueResult().withID(1).withName("test-gcp-service-account")
-//                    .withSecretBinary(byteCreds);
-//        } catch (IOException e) {
-//            LOG.info("Couldn't read file", e);
-//            return null;
-//        }
 
         LOG.info("gRPC GetSecretValue invoked");
         GetSecretRequest request = GetSecretRequest.newBuilder().setId(ID).build();
         GetSecretResponse response;
 
-        ManagedChannel channel = Grpc.newChannelBuilder(endpoint.toString(), InsecureChannelCredentials.create()).build();
         ConnectorGrpc.ConnectorBlockingStub blockingStub = ConnectorGrpc.newBlockingStub(channel);
         try {
             response = blockingStub.getSecret(request);
@@ -57,7 +47,7 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
             String message = new Formatter().format("gRPC failed %S", e.getStatus()).toString();
             LOG.info(message);
         } finally {
-            channel.shutdown();
+            shutdown();
         }
 
         return null;
@@ -84,10 +74,15 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
 
         ListSecretsResult result = new ListSecretsResult().withSecretList((secretList));
         LOG.info(result);
+
         return result;
     }
 
     private void init() {
 
+    }
+
+    public void shutdown() {
+        channel.shutdown();
     }
 }

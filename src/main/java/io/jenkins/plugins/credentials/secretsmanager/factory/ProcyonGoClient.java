@@ -4,8 +4,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.amazonaws.annotation.SdkProtectedApi;
+import io.grpc.Grpc;
+import io.grpc.InsecureChannelCredentials;
+import io.grpc.ManagedChannel;
 import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfiguration;
-import io.jenkins.plugins.credentials.secretsmanager.config.EndpointConfiguration;
 import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientParams;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProcyonCredentialsProvider;
 import org.apache.commons.logging.Log;
@@ -42,6 +44,8 @@ public abstract class ProcyonGoClient {
 
     protected ClientConfiguration clientConfiguration;
 
+    protected ManagedChannel channel;
+
     /** The client configuration */
 
     ProcyonGoClient(ClientConfiguration clientConfiguration, String serviceEndpoint) {
@@ -58,33 +62,13 @@ public abstract class ProcyonGoClient {
         };
 
         this.clientConfiguration = clientParams.getClientConfiguration();
-        this.setEndpoint(serviceEndpoint);
+        this.channel = Grpc.newChannelBuilder(serviceEndpoint, InsecureChannelCredentials.create()).build();
     }
 
     /**
-     * Overrides the default endpoint for this client. Callers can use this
-     * method to control which AWS region they want to work with.
-     * <p>
-     * <b>This method is not threadsafe. Endpoints should be configured when the
-     * client is created and before any service requests are made. Changing it
-     * afterwards creates inevitable race conditions for any service requests in
-     * transit.</b>
-     * <p>
-     * Callers can pass in just the endpoint (ex: "ec2.amazonaws.com") or a full
-     * URL, including the protocol (ex: "https://ec2.amazonaws.com"). If the
-     * protocol is not specified here, the default protocol from this client's
-     * {@link ClientConfiguration} will be used, which by default is HTTPS.
-     * <p>
-     * For more information on using AWS regions with the AWS SDK for Java, and
-     * a complete list of all available endpoints for all AWS services, see:
-     * <a href="https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-region-selection.html#region-selection-choose-endpoint">
-     * https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/java-dg-region-selection.html#region-selection-choose-endpoint</a>
-     *
+     * Endpoint to Procyon-Jenkins agent.
      * @param endpoint
-     *            The endpoint (ex: "ec2.amazonaws.com") or a full URL,
-     *            including the protocol (ex: "https://ec2.amazonaws.com") of
-     *            the region specific AWS endpoint this client will communicate
-     *            with.
+     *            The endpoint or a full URL.
      * @throws IllegalArgumentException
      *             If any problems are detected with the specified endpoint.
      */
