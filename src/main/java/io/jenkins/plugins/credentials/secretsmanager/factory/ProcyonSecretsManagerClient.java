@@ -1,20 +1,22 @@
 package io.jenkins.plugins.credentials.secretsmanager.factory;
 
-import com.ai.procyon.jenkins.grpc.agent.ConnectorGrpc;
-import com.ai.procyon.jenkins.grpc.agent.GetSecretRequest;
+import com.ai.procyon.jenkins.grpc.agent.*;
+
 import com.amazonaws.services.secretsmanager.model.Tag;
 import io.grpc.*;
+import io.grpc.stub.StreamObserver;
 import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfigurationFactory;
 import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientParams;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProcyonCredentialsProvider;
 import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsResult;
-import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsRequest;
 import io.jenkins.plugins.credentials.secretsmanager.model.SecretListEntry;
-import com.ai.procyon.jenkins.grpc.agent.GetSecretResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Formatter;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProcyonSecretsManagerClient extends ProcyonGoClient implements ProcyonSecretsManager {
 
@@ -24,10 +26,9 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
 
     protected static final ClientConfigurationFactory configFactory = new ClientConfigurationFactory();
 
-    ProcyonSecretsManagerClient(ProcyonSyncClientParams clientParams, String serviceEndpoint) {
-        super(clientParams, serviceEndpoint);
+    ProcyonSecretsManagerClient(ProcyonSyncClientParams clientParams, ManagedChannel channel) {
+        super(clientParams, channel);
         this.procyonCredentialsProvider = clientParams.getCredentialsProvider();
-        init();
     }
 
     @Override
@@ -37,52 +38,44 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
         LOG.info("gRPC GetSecretValue invoked");
         GetSecretRequest request = GetSecretRequest.newBuilder().setId(ID).build();
         GetSecretResponse response;
-
-        ConnectorGrpc.ConnectorBlockingStub blockingStub = ConnectorGrpc.newBlockingStub(channel);
+                
         try {
             response = blockingStub.getSecret(request);
-            LOG.info("gRPC Response: " + response.getSecret().getType());
             return response;
         } catch (StatusRuntimeException e) {
             String message = new Formatter().format("gRPC failed %S", e.getStatus()).toString();
             LOG.info(message);
-        } finally {
-            shutdown();
         }
 
         return null;
     }
 
     @Override
-    public ListSecretsResult listSecrets(ListSecretsRequest listSecretsRequest) {
+    public ListSecretsResult listSecrets(io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsRequest listSecretsRequest) throws InterruptedException {
         LOG.info("Trying to list secrets result");
-        java.util.Collection<SecretListEntry> secretList = new java.util.ArrayList<>();
 
-        com.amazonaws.services.secretsmanager.model.Tag fileNameTag = new Tag().withKey(Tags.filename).withValue("gcp_creds.json");
-        com.amazonaws.services.secretsmanager.model.Tag typeTag1 = new Tag().withKey(Tags.type).withValue(Type.file);
-        SecretListEntry secretListEntry = new SecretListEntry().withID(1).withName("test-gcp-service-account").withTags(fileNameTag, typeTag1);
-        secretList.add(secretListEntry);
+        Map<String,String> tagsForRequest = Stream.of(new String[][] {
+                {"Development", "Jenkins plugin"},
+        }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
 
-        com.amazonaws.services.secretsmanager.model.Tag userNameTag = new Tag().withKey(Tags.username).withValue("Han Solo");
-        com.amazonaws.services.secretsmanager.model.Tag typeTag2 = new Tag().withKey(Tags.type).withValue(Type.usernamePassword);
-        secretListEntry = new SecretListEntry().withID(2).withName("test-username").withTags(userNameTag, typeTag2);
-        secretList.add(secretListEntry);
+        ListSecretsRequest listSecretsDemoRequest = ListSecretsRequest.newBuilder().putAllTags(tagsForRequest).build();
 
-        com.amazonaws.services.secretsmanager.model.Tag typeTag3 = new Tag().withKey(Tags.type).withValue(Type.certificate);
-        secretListEntry = new SecretListEntry().withID(3).withName("test-certificate").withTags(typeTag3);
-        secretList.add(secretListEntry);
+        java.util.Collection<SecretListEntry> secretList = new ArrayList<>();
 
-        ListSecretsResult result = new ListSecretsResult().withSecretList((secretList));
+        ListSecretsResponse response;
+        try {
+            response = blockingStub.listSecrets(listSecretsDemoRequest);
+
+            secretList = response.getSecretListList().stream()
+                    .map(entry -> new SecretListEntry().withID(entry.getId()).withName(entry.getName()).withTags(entry.getTagsMap()))
+                    .collect(Collectors.toList());
+        } catch (StatusRuntimeException e) {
+            String message = new Formatter().format("gRPC failed %S", e.getStatus()).toString();
+            LOG.info(message);
+        }
+
+        ListSecretsResult result = new ListSecretsResult().withSecretList(secretList);
         LOG.info(result);
-
         return result;
-    }
-
-    private void init() {
-
-    }
-
-    public void shutdown() {
-        channel.shutdown();
     }
 }

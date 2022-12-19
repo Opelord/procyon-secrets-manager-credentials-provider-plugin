@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <Class name="com.ai.procyon.jenkins.grpc.agent.Secret" />
+        <Bug pattern="SE_BAD_FIELD" />
+    </Match>
+    <Match>
+        <Class name="com.ai.procyon.jenkins.grpc.agent.ListSecretsRequest" />
+        <Bug pattern="SE_BAD_FIELD" />
+    </Match>
+</FindBugsFilter>

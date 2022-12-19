@@ -88,7 +88,7 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      * <code>UntagResource</code> </a>.
      * </p>
      */
-    private java.util.List<Tag> tags;
+    private Map<String,String> tags;
     /**
      * <p>
      * A list of all of the currently assigned <code>SecretVersionStage</code> staging labels and the
@@ -499,7 +499,7 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      *         <code>UntagResource</code> </a>.
      */
 
-    public java.util.List<Tag> getTags() {
+    public Map<String, String> getTags() {
         return tags;
     }
 
@@ -520,46 +520,8 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      *        <code>UntagResource</code> </a>.
      */
 
-    public void setTags(java.util.Collection<Tag> tags) {
-        if (tags == null) {
-            this.tags = null;
-            return;
-        }
-
-        this.tags = new java.util.ArrayList<Tag>(tags);
-    }
-
-    /**
-     * <p>
-     * The list of user-defined tags associated with the secret. To add tags to a secret, use <a
-     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
-     * <code>TagResource</code> </a>. To remove tags, use <a
-     * href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
-     * <code>UntagResource</code> </a>.
-     * </p>
-     * <p>
-     * <b>NOTE:</b> This method appends the values to the existing list (if any). Use
-     * {@link #setTags(java.util.Collection)} or {@link #withTags(java.util.Collection)} if you want to override the
-     * existing values.
-     * </p>
-     *
-     * @param tags
-     *        The list of user-defined tags associated with the secret. To add tags to a secret, use <a
-     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_TagResource.html">
-     *        <code>TagResource</code> </a>. To remove tags, use <a
-     *        href="https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_UntagResource.html">
-     *        <code>UntagResource</code> </a>.
-     * @return Returns a reference to this object so that method calls can be chained together.
-     */
-
-    public SecretListEntry withTags(Tag... tags) {
-        if (this.tags == null) {
-            setTags(new java.util.ArrayList<Tag>(tags.length));
-        }
-        for (Tag ele : tags) {
-            this.tags.add(ele);
-        }
-        return this;
+    public void setTags(Map<String,String> tags) {
+        this.tags = tags;
     }
 
     /**
@@ -580,7 +542,7 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
      * @return Returns a reference to this object so that method calls can be chained together.
      */
 
-    public SecretListEntry withTags(java.util.Collection<Tag> tags) {
+    public SecretListEntry withTags(Map<String,String> tags) {
         setTags(tags);
         return this;
     }
@@ -931,7 +893,7 @@ public class SecretListEntry implements Serializable, Cloneable, StructuredPojo 
                 .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("LastAccessedDate").timestampFormat("unixTimestamp").build();
         private static final MarshallingInfo<java.util.Date> DELETEDDATE_BINDING = MarshallingInfo.builder(MarshallingType.DATE)
                 .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("DeletedDate").timestampFormat("unixTimestamp").build();
-        private static final MarshallingInfo<List> TAGS_BINDING = MarshallingInfo.builder(MarshallingType.LIST).marshallLocation(MarshallLocation.PAYLOAD)
+        private static final MarshallingInfo<Map> TAGS_BINDING = MarshallingInfo.builder(MarshallingType.MAP).marshallLocation(MarshallLocation.PAYLOAD)
                 .marshallLocationName("Tags").build();
         private static final MarshallingInfo<Map> SECRETVERSIONSTOSTAGES_BINDING = MarshallingInfo.builder(MarshallingType.MAP)
                 .marshallLocation(MarshallLocation.PAYLOAD).marshallLocationName("SecretVersionsToStages").build();

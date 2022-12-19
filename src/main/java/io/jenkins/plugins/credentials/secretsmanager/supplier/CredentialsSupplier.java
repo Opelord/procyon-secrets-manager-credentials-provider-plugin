@@ -47,10 +47,8 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
                     LOG.log(Level.INFO, "Got secret list entry ID = {0}", id);
                     final String name = secretListEntry.getName();
                     final String description = secretListEntry.getDescription();
-                    final Map<String, String> tags = Lists.toMap(secretListEntry.getTags(), Tag::getKey, Tag::getValue);
-                    LOG.log(Level.INFO, "Got tags in secret list entry {0}", tags);
+                    final Map<String, String> tags = secretListEntry.getTags();
                     final Optional<StandardCredentials> cred = CredentialsFactory.create(id, name, description, tags, client);
-                    LOG.log(Level.INFO, "Credential Supplier: credentials before list: {0}", cred);
                     return Optionals.stream(cred);
                 })
                 .collect(Collectors.toList());

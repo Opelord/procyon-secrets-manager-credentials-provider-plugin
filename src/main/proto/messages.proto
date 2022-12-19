@@ -9,9 +9,20 @@ option java_multiple_files = true;
 option java_package = "com.ai.procyon.jenkins.grpc.agent";
 
 message Secret {
-  uint32 id   = 1;
-  string type = 2;
-  File   file = 3;
+  uint32              id   = 1;
+  string              name = 2;
+  map<string, string> tags = 3;
+}
+
+message SecretValue {
+  Secret secret = 1;
+  oneof secretContent {
+    File file = 2;
+    UsernamePassword usernamePassword = 3;
+    SecretString string = 4;
+    Certificate certificate = 5;
+    SshUserPrivateKey sshUserPrivateKey = 6;
+  }
 }
 
 message File {
@@ -19,14 +30,36 @@ message File {
   bytes  fileContent = 3;
 }
 
+message UsernamePassword {
+  string password = 1;
+  string username = 2;
+}
+
+message SecretString {
+  string value = 1;
+}
+
+message Certificate {
+  bytes keyStore = 1;
+}
+
+message SshUserPrivateKey {
+  string privateKey = 1;
+  string username = 2;
+}
+
 message GetSecretRequest {
   uint32 id = 1;
 }
 
 message GetSecretResponse {
-  Secret secret = 1;
+  SecretValue secretValue = 1;
 }
 
-message ListSecretsRequest {}
+message ListSecretsRequest {
+  map<string,string> tags = 1;
+}
 
-message ListSecretsResponse {}
+message ListSecretsResponse {
+  repeated Secret secretList = 1;
+}

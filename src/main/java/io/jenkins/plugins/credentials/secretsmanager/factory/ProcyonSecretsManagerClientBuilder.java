@@ -1,5 +1,8 @@
 package io.jenkins.plugins.credentials.secretsmanager.factory;
 
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import io.grpc.internal.ManagedChannelImplBuilder;
 import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfigurationFactory;
 import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientBuilder;
 import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientParams;
@@ -22,6 +25,7 @@ public final class ProcyonSecretsManagerClientBuilder extends ProcyonSyncClientB
 
     @Override
     protected ProcyonSecretsManager build(ProcyonSyncClientParams clientParams, EndpointConfiguration endpointConfiguration) {
-        return new ProcyonSecretsManagerClient(clientParams, endpointConfiguration.getServiceEndpoint());
+        ManagedChannel channel = ManagedChannelBuilder.forTarget(endpointConfiguration.getServiceEndpoint()).usePlaintext().build();
+        return new ProcyonSecretsManagerClient(clientParams, channel);
     }
 }
