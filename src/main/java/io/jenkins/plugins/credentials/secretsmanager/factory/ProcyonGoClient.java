@@ -3,10 +3,9 @@ package io.jenkins.plugins.credentials.secretsmanager.factory;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import com.ai.procyon.jenkins.grpc.agent.ConnectorGrpc;
 import com.amazonaws.annotation.SdkProtectedApi;
-import io.grpc.Grpc;
-import io.grpc.InsecureChannelCredentials;
-import io.grpc.ManagedChannel;
+import io.grpc.*;
 import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfiguration;
 import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientParams;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProcyonCredentialsProvider;
@@ -44,11 +43,13 @@ public abstract class ProcyonGoClient {
 
     protected ClientConfiguration clientConfiguration;
 
-    protected ManagedChannel channel;
+    protected ConnectorGrpc.ConnectorBlockingStub blockingStub;
+
+    protected ConnectorGrpc.ConnectorStub nonBlockingStub;
 
     /** The client configuration */
 
-    ProcyonGoClient(ClientConfiguration clientConfiguration, String serviceEndpoint) {
+    ProcyonGoClient(ClientConfiguration clientConfiguration, ManagedChannel channel) {
         ProcyonSyncClientParams clientParams = new ProcyonSyncClientParams() {
             @Override
             public ProcyonCredentialsProvider getCredentialsProvider() {
@@ -62,7 +63,8 @@ public abstract class ProcyonGoClient {
         };
 
         this.clientConfiguration = clientParams.getClientConfiguration();
-        this.channel = Grpc.newChannelBuilder(serviceEndpoint, InsecureChannelCredentials.create()).build();
+        this.blockingStub = ConnectorGrpc.newBlockingStub(channel);
+        this.nonBlockingStub = ConnectorGrpc.newStub(channel);
     }
 
     /**

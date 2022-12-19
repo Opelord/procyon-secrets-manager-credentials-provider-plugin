@@ -36,13 +36,17 @@ class ListSecretsOperation implements Supplier<Collection<SecretListEntry>> {
         do {
             final ListSecretsRequest base = new ListSecretsRequest();
             final ListSecretsRequest request = nextToken.map((nt) -> base.withNextToken(nt)).orElse(base);
-            final ListSecretsResult result = client.listSecrets(request);
-            final List<SecretListEntry> secrets = result.getSecretList()
-                    .stream()
-                    .filter(ListSecretsOperation::isNotDeleted)
-                    .collect(Collectors.toList());
-            secretList.addAll(secrets);
-            nextToken = Optional.ofNullable(result.getNextToken());
+            try {
+                final ListSecretsResult result = client.listSecrets(request);
+                final List<SecretListEntry> secrets = result.getSecretList()
+                        .stream()
+                        .filter(ListSecretsOperation::isNotDeleted)
+                        .collect(Collectors.toList());
+                secretList.addAll(secrets);
+                nextToken = Optional.ofNullable(result.getNextToken());
+            } catch (InterruptedException e) {
+                return secretList;
+            }
         } while (nextToken.isPresent());
 
         secretList.add(new SecretListEntry());

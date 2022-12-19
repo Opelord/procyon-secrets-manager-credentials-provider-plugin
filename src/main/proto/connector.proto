@@ -14,4 +14,3 @@ service Connector {
   rpc ListSecrets(ListSecretsRequest) returns (ListSecretsResponse) {}
   rpc GetSecret(GetSecretRequest) returns (GetSecretResponse) {}
 }
-
