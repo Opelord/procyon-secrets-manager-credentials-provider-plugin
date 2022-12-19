@@ -10,7 +10,5 @@ public interface ProcyonSecretsManager {
 
     GetSecretResponse getSecretValue(Integer ID);
 
-    ListSecretsResult listSecrets(ListSecretsRequest listSecretsRequest);
-
-    void shutdown();
+    ListSecretsResult listSecrets(ListSecretsRequest listSecretsRequest) throws InterruptedException;
 }

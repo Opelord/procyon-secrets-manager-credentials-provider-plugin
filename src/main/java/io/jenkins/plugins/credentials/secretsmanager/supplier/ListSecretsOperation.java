@@ -5,6 +5,8 @@ import io.jenkins.plugins.credentials.secretsmanager.factory.ProcyonSecretsManag
 import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsRequest;
 import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsResult;
 import io.jenkins.plugins.credentials.secretsmanager.model.SecretListEntry;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
  * until there are none left to get.
  */
 class ListSecretsOperation implements Supplier<Collection<SecretListEntry>> {
+    private static final Log LOG = LogFactory.getLog(ProcyonSecretsManager.class.getName());
 
     private final ProcyonSecretsManager client;
 
@@ -36,16 +39,16 @@ class ListSecretsOperation implements Supplier<Collection<SecretListEntry>> {
         do {
             final ListSecretsRequest base = new ListSecretsRequest();
             final ListSecretsRequest request = nextToken.map((nt) -> base.withNextToken(nt)).orElse(base);
-            final ListSecretsResult result = client.listSecrets(request);
-            final List<SecretListEntry> secrets = result.getSecretList()
-                    .stream()
-                    .filter(ListSecretsOperation::isNotDeleted)
-                    .collect(Collectors.toList());
-            secretList.addAll(secrets);
-            nextToken = Optional.ofNullable(result.getNextToken());
+            try {
+                final ListSecretsResult result = client.listSecrets(request);
+                final List<SecretListEntry> secrets = result.getSecretList();
+                secretList.addAll(secrets);
+                nextToken = Optional.ofNullable(result.getNextToken());
+            } catch (InterruptedException e) {
+                return secretList;
+            }
         } while (nextToken.isPresent());
 
-        secretList.add(new SecretListEntry());
         return secretList;
     }
 

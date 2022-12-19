@@ -14,6 +14,7 @@ import io.jenkins.plugins.credentials.secretsmanager.factory.string.ProcyonStrin
 import io.jenkins.plugins.credentials.secretsmanager.factory.username_password.ProcyonUsernamePasswordCredentials;
 import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueRequest;
 import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueResult;
+import io.jenkins.plugins.credentials.secretsmanager.supplier.CredentialsSupplier;
 
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class CredentialsFactory {
+    private static final Logger LOG = Logger.getLogger(CredentialsSupplier.class.getName());
 
     private CredentialsFactory() {
 
@@ -37,9 +39,10 @@ public abstract class CredentialsFactory {
      * @return a credential (if one could be constructed from the secret's properties)
      */
     public static Optional<StandardCredentials> create(Integer id, String name, String description, Map<String, String> tags, ProcyonSecretsManager client) {
-        final String type = tags.getOrDefault(Tags.type, "");
-        final String username = tags.getOrDefault(Tags.username, "");
-        final String filename = tags.getOrDefault(Tags.filename, name);
+        final String type = tags.getOrDefault(Type.type, "");
+        final String username = tags.getOrDefault(Type.username, "");
+        final String filename = tags.getOrDefault(Type.filename, name);
+        LOG.log(Level.INFO, "Got secret of type {0}", type);
 
         switch (type) {
             case Type.string:
@@ -144,18 +147,26 @@ public abstract class CredentialsFactory {
         @NonNull
         SecretValue getSecretValue() {
             try {
-                LOG.info("Getting secret binary");
+                LOG.info("Getting secret");
                 final GetSecretResponse response = client.getSecretValue(id);
                 if (response == null) {
                     throw new IllegalStateException(Messages.emptySecretError(id));
                 }
-                LOG.log(Level.WARNING, "1 - has secret, 0 - secret is NULL: {0}", response.hasSecret());
-                com.ai.procyon.jenkins.grpc.agent.Secret secret = response.getSecret();
-                String type = secret.getType();
-                switch (type) {
-                    case Type.file:
-                        return SecretValue.binary(response.getSecret().getFile().getFileContent().toByteArray());
+                LOG.log(Level.WARNING, "got secret? {0}", response.hasSecretValue());
+
+                switch (response.getSecretValue().getSecretContentCase()) {
+                    case FILE:
+                        return SecretValue.binary(response.getSecretValue().getFile().getFileContent().toByteArray());
+                    case CERTIFICATE:
+                        return SecretValue.binary(response.getSecretValue().getCertificate().getKeyStore().toByteArray());
+                    case SSHUSERPRIVATEKEY:
+                        return SecretValue.string(response.getSecretValue().getSshUserPrivateKey().getPrivateKey());
+                    case USERNAMEPASSWORD:
+                        return SecretValue.string(response.getSecretValue().getUsernamePassword().getPassword());
+                    case STRING:
+                        return SecretValue.string(response.getSecretValue().getString().getValue());
                 }
+
                 throw new IllegalStateException(Messages.emptySecretError(id));
             } catch (IllegalStateException ex) {
                 LOG.warning("Procyon Secrets Manager retrieval error");
