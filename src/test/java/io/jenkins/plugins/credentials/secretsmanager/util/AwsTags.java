@@ -1,7 +1,6 @@
 package io.jenkins.plugins.credentials.secretsmanager.util;
 
 import com.amazonaws.services.secretsmanager.model.Tag;
-import io.jenkins.plugins.credentials.secretsmanager.factory.Tags;
 
 /**
  * Tags that the Jenkins plugin looks for.

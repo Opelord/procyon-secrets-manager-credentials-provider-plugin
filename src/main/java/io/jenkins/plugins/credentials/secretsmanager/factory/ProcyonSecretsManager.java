@@ -5,7 +5,6 @@ import com.ai.procyon.jenkins.grpc.agent.ListSecretsRequest;
 import com.ai.procyon.jenkins.grpc.agent.GetSecretResponse;
 
 public interface ProcyonSecretsManager {
-    String ENDPOINT_PREFIX = "secretsmanager";
 
     GetSecretResponse getSecretValue(Integer ID);
 

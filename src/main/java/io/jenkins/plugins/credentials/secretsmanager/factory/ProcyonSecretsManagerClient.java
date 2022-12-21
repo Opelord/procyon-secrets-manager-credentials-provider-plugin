@@ -26,9 +26,6 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
 
     @Override
     public GetSecretResponse getSecretValue(Integer ID) {
-        LOG.info("Trying to get secret value result");
-
-        LOG.info("gRPC GetSecretValue invoked");
         GetSecretRequest request = GetSecretRequest.newBuilder().setId(ID).build();
         GetSecretResponse response;
                 
@@ -46,12 +43,6 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
     @Override
     public ListSecretsResponse listSecrets(ListSecretsRequest listSecretsRequest) throws InterruptedException {
         LOG.info("Trying to list secrets result");
-
-//        Map<String,String> tagsForRequest = Stream.of(new String[][] {
-//                {"Development", "Jenkins plugin"},
-//        }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
-//
-//        ListSecretsRequest listSecretsDemoRequest = ListSecretsRequest.newBuilder().putAllTags(tagsForRequest).build();
 
         ListSecretsResponse response;
         try {

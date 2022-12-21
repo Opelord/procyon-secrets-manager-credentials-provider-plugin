@@ -1,6 +1,5 @@
 package io.jenkins.plugins.credentials.secretsmanager.config.transformations.description;
 
-import io.jenkins.plugins.credentials.secretsmanager.config.Transformations;
 import io.jenkins.plugins.credentials.secretsmanager.config.PluginConfiguration;
 import io.jenkins.plugins.credentials.secretsmanager.config.transformer.description.Hide;
 import org.junit.Test;
