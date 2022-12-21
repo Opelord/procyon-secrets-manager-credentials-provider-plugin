@@ -1,6 +1,5 @@
 package io.jenkins.plugins.credentials.secretsmanager.config;
 
-import com.amazonaws.services.secretsmanager.model.FilterNameStringType;
 import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
@@ -10,11 +9,9 @@ import io.jenkins.plugins.credentials.secretsmanager.Messages;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
-import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nonnull;
 import java.io.Serializable;
-import java.util.List;
 
 @Symbol("filter")
 public class Filter extends AbstractDescribableImpl<Filter> implements Serializable {
@@ -23,12 +20,12 @@ public class Filter extends AbstractDescribableImpl<Filter> implements Serializa
 
     private String key;
 
-    private List<Value> values;
+    private String value;
 
     @DataBoundConstructor
-    public Filter(String key, List<Value> values) {
+    public Filter(String key, String value) {
         this.key = key;
-        this.values = values;
+        this.value = value;
     }
 
     public String getKey() {
@@ -40,13 +37,13 @@ public class Filter extends AbstractDescribableImpl<Filter> implements Serializa
         this.key = key;
     }
 
-    public List<Value> getValues() {
-        return values;
+    public String getValue() {
+        return value;
     }
 
     @DataBoundSetter
-    public void setValues(List<Value> values) {
-        this.values = values;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Extension
@@ -58,29 +55,6 @@ public class Filter extends AbstractDescribableImpl<Filter> implements Serializa
         @Nonnull
         public String getDisplayName() {
             return Messages.filter();
-        }
-
-        public FormValidation doCheckKey(@QueryParameter String key) {
-            try {
-                FilterNameStringType.fromValue(key);
-            } catch (IllegalArgumentException e) {
-                return FormValidation.error(e.getMessage());
-            }
-            return FormValidation.ok();
-        }
-
-        public ListBoxModel doFillKeyItems() {
-            return allKeys();
-        }
-
-        private static ListBoxModel allKeys() {
-            final ListBoxModel list = new ListBoxModel();
-
-            for (FilterNameStringType key: FilterNameStringType.values()) {
-                list.add(key.toString());
-            }
-
-            return list;
         }
     }
 }

@@ -1,7 +1,6 @@
 package io.jenkins.plugins.credentials.secretsmanager.supplier;
 
-import com.amazonaws.services.secretsmanager.model.Filter;
-import com.amazonaws.services.secretsmanager.model.Tag;
+import io.jenkins.plugins.credentials.secretsmanager.model.Filter;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import io.jenkins.plugins.credentials.secretsmanager.FiltersFactory;
 import io.jenkins.plugins.credentials.secretsmanager.config.*;
@@ -32,7 +31,7 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
 
         final PluginConfiguration config = PluginConfiguration.getInstance();
 
-        final Collection<Filter> filters = createListSecretsFilters(config);
+        Collection<Filter> filters = createListSecretsFilters(config);
 
         final ProcyonSecretsManager client = createClient(config);
 

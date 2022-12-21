@@ -18,14 +18,14 @@ public abstract class AbstractFiltersIT {
     @Test
     public void shouldCustomiseFilters() {
         // Given
-        setFilters(new Filter("name", Lists.of(new Value("foo"))));
+        setFilters(new Filter("name", "foo"));
 
         // When
         final PluginConfiguration config = getPluginConfiguration();
 
         // Then
         assertThat(config.getListSecrets().getFilters())
-                .extracting("key", "values")
-                .contains(tuple("name", Lists.of(new Value("foo"))));
+                .extracting("key", "value")
+                .contains(tuple("name", "foo"));
     }
 }

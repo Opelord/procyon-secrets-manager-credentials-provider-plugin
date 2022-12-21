@@ -15,11 +15,9 @@ package io.jenkins.plugins.credentials.secretsmanager.model;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.protocol.*;
-import com.amazonaws.services.secretsmanager.model.Tag;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 public class SecretListEntry implements Serializable, Cloneable, StructuredPojo {

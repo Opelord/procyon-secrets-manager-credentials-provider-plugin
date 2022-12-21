@@ -91,7 +91,7 @@ public class CacheIT {
     }
 
     private void setFilter(String key, String value) {
-        final List<Filter> filters = Lists.of(new Filter(key, Lists.of(new Value(value))));
+        final List<Filter> filters = Lists.of(new Filter(key, value));
         final ListSecrets listSecrets = new ListSecrets(filters);
         final PluginConfiguration config = (PluginConfiguration) jenkins.getInstance().getDescriptor(PluginConfiguration.class);
         config.setListSecrets(listSecrets);
