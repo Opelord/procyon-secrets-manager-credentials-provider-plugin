@@ -1,17 +1,16 @@
 package io.jenkins.plugins.credentials.secretsmanager.supplier;
 
-import com.amazonaws.services.secretsmanager.model.Filter;
+import com.ai.procyon.jenkins.grpc.agent.ListSecretsRequest;
+import com.ai.procyon.jenkins.grpc.agent.ListSecretsResponse;
+import io.jenkins.plugins.credentials.secretsmanager.model.Filter;
 import io.jenkins.plugins.credentials.secretsmanager.factory.ProcyonSecretsManager;
-import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsRequest;
-import io.jenkins.plugins.credentials.secretsmanager.model.ListSecretsResult;
 import io.jenkins.plugins.credentials.secretsmanager.model.SecretListEntry;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
  * until there are none left to get.
  */
 class ListSecretsOperation implements Supplier<Collection<SecretListEntry>> {
-    private static final Log LOG = LogFactory.getLog(ProcyonSecretsManager.class.getName());
+    //private static final Log LOG = LogFactory.getLog(ProcyonSecretsManager.class.getName());
 
     private final ProcyonSecretsManager client;
 
@@ -33,26 +32,22 @@ class ListSecretsOperation implements Supplier<Collection<SecretListEntry>> {
 
     @Override
     public Collection<SecretListEntry> get() {
-        final List<SecretListEntry> secretList = new ArrayList<>();
+        final List<SecretListEntry> secretList;
 
-        Optional<String> nextToken = Optional.empty();
-        do {
-            final ListSecretsRequest base = new ListSecretsRequest();
-            final ListSecretsRequest request = nextToken.map((nt) -> base.withNextToken(nt)).orElse(base);
-            try {
-                final ListSecretsResult result = client.listSecrets(request);
-                final List<SecretListEntry> secrets = result.getSecretList();
-                secretList.addAll(secrets);
-                nextToken = Optional.ofNullable(result.getNextToken());
-            } catch (InterruptedException e) {
-                return secretList;
-            }
-        } while (nextToken.isPresent());
+        Map<String,String> tags = this.filters.stream()
+                .map(entry -> new String[]{entry.getKey(), entry.getValue()})
+                .collect(Collectors.toMap(data -> data[0], data -> data[1]));
+        ListSecretsRequest request = ListSecretsRequest.newBuilder().putAllTags(tags).build();
+
+        try {
+            ListSecretsResponse response = client.listSecrets(request);
+            secretList = response.getSecretListList().stream()
+                    .map(entry -> new SecretListEntry().withID(entry.getId()).withName(entry.getName()).withTags(entry.getTagsMap()))
+                    .collect(Collectors.toList());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         return secretList;
-    }
-
-    private static boolean isNotDeleted(SecretListEntry entry) {
-        return entry.getDeletedDate() == null;
     }
 }

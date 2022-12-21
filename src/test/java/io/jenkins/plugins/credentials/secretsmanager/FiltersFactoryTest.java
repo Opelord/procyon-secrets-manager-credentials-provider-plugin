@@ -14,8 +14,8 @@ import static org.assertj.core.api.Assertions.tuple;
 
 public class FiltersFactoryTest {
 
-    private static Filter filter(String key, String... values) {
-        return new Filter(key, Arrays.stream(values).map(Value::new).collect(Collectors.toList()));
+    private static Filter filter(String key, String value) {
+        return new Filter(key, value);
     }
     @Test
     public void shouldCreateEmptyFilter() {
@@ -25,7 +25,7 @@ public class FiltersFactoryTest {
 
     @Test
     public void shouldCreateFilter() {
-        final Collection<Filter> config = Lists.of(filter("name", "foo", "bar"));
+        final Collection<Filter> config = Lists.of(filter("name", "foo"));
 
         assertThat(FiltersFactory.create(config))
                 .extracting("key", "values")

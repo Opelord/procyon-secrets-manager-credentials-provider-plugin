@@ -36,7 +36,6 @@ public class Client extends AbstractDescribableImpl<Client> implements Serializa
         if (endpointConfiguration != null) {
             LOG.log(Level.INFO, "successfully created Client object with endpoint {0}", endpointConfiguration.getServiceEndpoint());
         }
-        LOG.log(Level.INFO, "successfully created Client object");
     }
 
     public EndpointConfiguration getEndpointConfiguration() {

@@ -12,8 +12,6 @@ import io.jenkins.plugins.credentials.secretsmanager.factory.file.ProcyonFileCre
 import io.jenkins.plugins.credentials.secretsmanager.factory.ssh_user_private_key.ProcyonSshUserPrivateKey;
 import io.jenkins.plugins.credentials.secretsmanager.factory.string.ProcyonStringCredentials;
 import io.jenkins.plugins.credentials.secretsmanager.factory.username_password.ProcyonUsernamePasswordCredentials;
-import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueRequest;
-import io.jenkins.plugins.credentials.secretsmanager.model.GetSecretValueResult;
 import io.jenkins.plugins.credentials.secretsmanager.supplier.CredentialsSupplier;
 
 import java.util.Map;
