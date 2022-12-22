@@ -6,6 +6,7 @@ import io.grpc.*;
 import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfigurationFactory;
 import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientParams;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProcyonCredentialsProvider;
+import jline.internal.TestAccessible;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -19,8 +20,11 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
 
     protected static final ClientConfigurationFactory configFactory = new ClientConfigurationFactory();
 
-    ProcyonSecretsManagerClient(ProcyonSyncClientParams clientParams, ManagedChannel channel) {
+    protected ManagedChannel channel;
+
+    protected ProcyonSecretsManagerClient(ProcyonSyncClientParams clientParams, ManagedChannel channel) {
         super(clientParams, channel);
+        this.channel = channel;
         this.procyonCredentialsProvider = clientParams.getCredentialsProvider();
     }
 
@@ -55,5 +59,19 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
         }
 
         return null;
+    }
+
+    @Override
+    public CreateSecretResponse createSecret(CreateSecretRequest request) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DeleteSecretResponse deleteSecret(DeleteSecretRequest request) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void shutdown() {
+        this.channel.shutdownNow();
     }
 }

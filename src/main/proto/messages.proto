@@ -63,3 +63,17 @@ message ListSecretsRequest {
 message ListSecretsResponse {
   repeated Secret secretList = 1;
 }
+
+message CreateSecretRequest {
+  SecretValue secretValue = 1;
+}
+
+message CreateSecretResponse {
+  Secret secret = 1;
+}
+
+message DeleteSecretRequest {
+  uint32 id = 1;
+}
+
+message DeleteSecretResponse {}

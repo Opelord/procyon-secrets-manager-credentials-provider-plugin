@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Extension
-@Symbol("awsCredentialsProvider")
+@Symbol("procyonCredentialsProvider")
 public class PluginConfiguration extends GlobalConfiguration {
 
     private static final Logger LOG = Logger.getLogger(PluginConfiguration.class.getName());
