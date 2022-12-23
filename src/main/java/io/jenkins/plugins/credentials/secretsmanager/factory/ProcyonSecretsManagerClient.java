@@ -6,6 +6,7 @@ import io.grpc.*;
 import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfigurationFactory;
 import io.jenkins.plugins.credentials.secretsmanager.config.ProcyonSyncClientParams;
 import io.jenkins.plugins.credentials.secretsmanager.config.credentialsProvider.ProcyonCredentialsProvider;
+import jline.internal.TestAccessible;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -19,16 +20,16 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
 
     protected static final ClientConfigurationFactory configFactory = new ClientConfigurationFactory();
 
-    ProcyonSecretsManagerClient(ProcyonSyncClientParams clientParams, ManagedChannel channel) {
+    protected ManagedChannel channel;
+
+    protected ProcyonSecretsManagerClient(ProcyonSyncClientParams clientParams, ManagedChannel channel) {
         super(clientParams, channel);
+        this.channel = channel;
         this.procyonCredentialsProvider = clientParams.getCredentialsProvider();
     }
 
     @Override
     public GetSecretResponse getSecretValue(Integer ID) {
-        LOG.info("Trying to get secret value result");
-
-        LOG.info("gRPC GetSecretValue invoked");
         GetSecretRequest request = GetSecretRequest.newBuilder().setId(ID).build();
         GetSecretResponse response;
                 
@@ -47,12 +48,6 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
     public ListSecretsResponse listSecrets(ListSecretsRequest listSecretsRequest) throws InterruptedException {
         LOG.info("Trying to list secrets result");
 
-//        Map<String,String> tagsForRequest = Stream.of(new String[][] {
-//                {"Development", "Jenkins plugin"},
-//        }).collect(Collectors.toMap(data -> data[0], data -> data[1]));
-//
-//        ListSecretsRequest listSecretsDemoRequest = ListSecretsRequest.newBuilder().putAllTags(tagsForRequest).build();
-
         ListSecretsResponse response;
         try {
             response = blockingStub.listSecrets(listSecretsRequest);
@@ -64,5 +59,19 @@ public class ProcyonSecretsManagerClient extends ProcyonGoClient implements Proc
         }
 
         return null;
+    }
+
+    @Override
+    public CreateSecretResponse createSecret(CreateSecretRequest request) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public DeleteSecretResponse deleteSecret(DeleteSecretRequest request) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void shutdown() {
+        this.channel.shutdownNow();
     }
 }

@@ -18,7 +18,7 @@ public abstract class AbstractFiltersIT {
     @Test
     public void shouldCustomiseFilters() {
         // Given
-        setFilters(new Filter("name", "foo"));
+        setFilters(new Filter("foo", "bar"));
 
         // When
         final PluginConfiguration config = getPluginConfiguration();
@@ -26,6 +26,6 @@ public abstract class AbstractFiltersIT {
         // Then
         assertThat(config.getListSecrets().getFilters())
                 .extracting("key", "value")
-                .contains(tuple("name", "foo"));
+                .contains(tuple("foo", "bar"));
     }
 }

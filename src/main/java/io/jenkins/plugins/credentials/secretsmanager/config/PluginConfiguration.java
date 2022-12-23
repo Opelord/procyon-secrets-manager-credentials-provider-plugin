@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Extension
-@Symbol("awsCredentialsProvider")
+@Symbol("procyonCredentialsProvider")
 public class PluginConfiguration extends GlobalConfiguration {
 
     private static final Logger LOG = Logger.getLogger(PluginConfiguration.class.getName());
@@ -34,8 +34,6 @@ public class PluginConfiguration extends GlobalConfiguration {
     private transient EndpointConfiguration endpointConfiguration;
 
     private ListSecrets listSecrets;
-
-    private Transformations transformations;
 
     public PluginConfiguration() {
         load();
@@ -88,17 +86,6 @@ public class PluginConfiguration extends GlobalConfiguration {
         save();
     }
 
-    public Transformations getTransformations() {
-        return transformations;
-    }
-
-    @DataBoundSetter
-    @SuppressWarnings("unused")
-    public void setTransformations(Transformations transformations) {
-        this.transformations = transformations;
-        save();
-    }
-
     @Override
     public synchronized boolean configure(StaplerRequest req, JSONObject json) {
         // This method is unnecessary, except to apply the following workaround.
@@ -106,7 +93,6 @@ public class PluginConfiguration extends GlobalConfiguration {
         // https://groups.google.com/forum/#!msg/jenkinsci-dev/MuRJ-yPRRoo/AvoPZAgbAAAJ
         this.client = null;
         this.listSecrets = null;
-        this.transformations = null;
 
         req.bindJSON(this, json);
         save();

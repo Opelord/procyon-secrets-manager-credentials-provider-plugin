@@ -25,24 +25,22 @@ public class FiltersFactoryTest {
 
     @Test
     public void shouldCreateFilter() {
-        final Collection<Filter> config = Lists.of(filter("name", "foo"));
+        final Collection<Filter> config = Lists.of(filter("foo", "bar"));
 
         assertThat(FiltersFactory.create(config))
-                .extracting("key", "values")
-                .contains(tuple("name", Lists.of("foo", "bar")));
+                .extracting("key", "value")
+                .contains(tuple("foo", "bar"));
     }
 
     @Test
     public void shouldCreateFilters() {
         final Collection<Filter> config = Lists.of(
-                filter("tag-key", "foo"),
-                filter("tag-value", "bar"));
+                filter("foo", "bar"));
 
         assertThat(FiltersFactory.create(config))
-                .extracting("key", "values")
+                .extracting("key", "value")
                 .contains(
-                        tuple("tag-key", Lists.of("foo")),
-                        tuple("tag-value", Lists.of("bar")));
+                        tuple("foo", "bar"));
     }
 
 }

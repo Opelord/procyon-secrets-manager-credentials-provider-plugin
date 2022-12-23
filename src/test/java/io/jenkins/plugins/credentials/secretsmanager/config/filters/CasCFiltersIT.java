@@ -43,9 +43,9 @@ public class CasCFiltersIT extends AbstractFiltersIT {
 
         // Then
         assertThat(config.getListSecrets().getFilters())
-                .extracting("key", "values")
+                .extracting("key", "value")
                 .contains(
-                        tuple("tag-key", Lists.of(new Value("foo"))),
-                        tuple("tag-value", Lists.of(new Value("bar"))));
+                        tuple("foo", "bar"),
+                        tuple("baz", "qux"));
     }
 }

@@ -3,8 +3,6 @@ package io.jenkins.plugins.credentials.secretsmanager.config;
 import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
-import hudson.util.FormValidation;
-import hudson.util.ListBoxModel;
 import io.jenkins.plugins.credentials.secretsmanager.Messages;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;

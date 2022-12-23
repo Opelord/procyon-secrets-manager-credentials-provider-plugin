@@ -1,8 +1,9 @@
 package io.jenkins.plugins.credentials.secretsmanager;
 
-import com.amazonaws.services.secretsmanager.model.CreateSecretRequest;
-import com.amazonaws.services.secretsmanager.model.CreateSecretResult;
-import com.amazonaws.services.secretsmanager.model.Tag;
+import com.ai.procyon.jenkins.grpc.agent.CreateSecretRequest;
+import com.ai.procyon.jenkins.grpc.agent.CreateSecretResponse;
+import com.ai.procyon.jenkins.grpc.agent.SecretString;
+import com.ai.procyon.jenkins.grpc.agent.SecretValue;
 import hudson.util.ListBoxModel;
 import hudson.util.Secret;
 import io.jenkins.plugins.casc.misc.ConfiguredWithCode;
@@ -15,7 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 
-import java.util.List;
+import java.util.Map;
 
 import static io.jenkins.plugins.credentials.secretsmanager.util.assertions.CustomAssertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -28,7 +29,7 @@ public class StringCredentialsIT implements CredentialsTests {
     private static final String SECRET = "supersecret";
 
     public final MyJenkinsConfiguredWithCodeRule jenkins = new MyJenkinsConfiguredWithCodeRule();
-    public final AWSSecretsManagerRule secretsManager = new AWSSecretsManagerRule();
+    public final ProcyonSecretsManagerRule secretsManager = new ProcyonSecretsManagerRule();
 
     @Rule
     public final TestRule chain = Rules.jenkinsWithSecretsManager(jenkins, secretsManager);
@@ -37,38 +38,38 @@ public class StringCredentialsIT implements CredentialsTests {
     @ConfiguredWithCode(value = "/integration.yml")
     public void shouldSupportListView() {
         // Given
-        final CreateSecretResult foo = createStringSecret(SECRET);
+        final CreateSecretResponse foo = createStringSecret(SECRET);
 
         // When
         final ListBoxModel list = jenkins.getCredentials().list(StringCredentials.class);
 
         // Then
         assertThat(list)
-                .containsOption(foo.getName(), foo.getName());
+                .containsOption(foo.getSecret().getName(), foo.getSecret().getName());
     }
 
     @Test
     @ConfiguredWithCode(value = "/integration.yml")
     public void shouldHaveId() {
         // Given
-        final CreateSecretResult foo = createStringSecret(SECRET);
+        final CreateSecretResponse foo = createStringSecret(SECRET);
 
         // When
-        final StringCredentials credential = jenkins.getCredentials().lookup(StringCredentials.class, foo.getName());
+        final StringCredentials credential = jenkins.getCredentials().lookup(StringCredentials.class, foo.getSecret().getName());
 
         // Then
         assertThat(credential)
-                .hasId(foo.getName());
+                .hasId(foo.getSecret().getName());
     }
 
     @Test
     @ConfiguredWithCode(value = "/integration.yml")
     public void shouldHaveSecret() {
         // Given
-        final CreateSecretResult foo = createStringSecret(SECRET);
+        final CreateSecretResponse foo = createStringSecret(SECRET);
 
         // When
-        final StringCredentials credential = jenkins.getCredentials().lookup(StringCredentials.class, foo.getName());
+        final StringCredentials credential = jenkins.getCredentials().lookup(StringCredentials.class, foo.getSecret().getName());
 
         // Then
         assertThat(credential)
@@ -78,8 +79,8 @@ public class StringCredentialsIT implements CredentialsTests {
     @Test
     @ConfiguredWithCode(value = "/integration.yml")
     public void shouldHaveDescriptorIcon() {
-        final CreateSecretResult foo = createStringSecret(SECRET);
-        final StringCredentials ours = jenkins.getCredentials().lookup(StringCredentials.class, foo.getName());
+        final CreateSecretResponse foo = createStringSecret(SECRET);
+        final StringCredentials ours = jenkins.getCredentials().lookup(StringCredentials.class, foo.getSecret().getName());
 
         final StringCredentials theirs = new StringCredentialsImpl(null, "id", "description", Secret.fromString("secret"));
 
@@ -91,11 +92,11 @@ public class StringCredentialsIT implements CredentialsTests {
     @ConfiguredWithCode(value = "/integration.yml")
     public void shouldSupportWithCredentialsBinding() {
         // Given
-        final CreateSecretResult foo = createStringSecret(SECRET);
+        final CreateSecretResponse foo = createStringSecret(SECRET);
 
         // When
         final WorkflowRun run = runPipeline("",
-                "withCredentials([string(credentialsId: '" + foo.getName() + "', variable: 'VAR')]) {",
+                "withCredentials([string(credentialsId: '" + foo.getSecret().getName() + "', variable: 'VAR')]) {",
                 "  echo \"Credential: $VAR\"",
                 "}");
 
@@ -109,7 +110,7 @@ public class StringCredentialsIT implements CredentialsTests {
     @ConfiguredWithCode(value = "/integration.yml")
     public void shouldSupportEnvironmentBinding() {
         // Given
-        final CreateSecretResult foo = createStringSecret(SECRET);
+        final CreateSecretResponse foo = createStringSecret(SECRET);
 
         // When
         final WorkflowRun run = runPipeline("",
@@ -118,7 +119,7 @@ public class StringCredentialsIT implements CredentialsTests {
                 "  stages {",
                 "    stage('Example') {",
                 "      environment {",
-                "        VAR = credentials('" + foo.getName() + "')",
+                "        VAR = credentials('" + foo.getSecret().getName() + "')",
                 "      }",
                 "      steps {",
                 "        echo \"{variable: $VAR}\"",
@@ -137,8 +138,8 @@ public class StringCredentialsIT implements CredentialsTests {
     @ConfiguredWithCode(value = "/integration.yml")
     public void shouldSupportSnapshots() {
         // Given
-        final CreateSecretResult foo = createStringSecret(SECRET);
-        final StringCredentials before = jenkins.getCredentials().lookup(StringCredentials.class, foo.getName());
+        final CreateSecretResponse foo = createStringSecret(SECRET);
+        final StringCredentials before = jenkins.getCredentials().lookup(StringCredentials.class, foo.getSecret().getName());
 
         // When
         final StringCredentials after = CredentialSnapshots.snapshot(before);
@@ -150,13 +151,25 @@ public class StringCredentialsIT implements CredentialsTests {
         });
     }
 
-    private CreateSecretResult createStringSecret(String secretString) {
-        final List<Tag> tags = Lists.of(AwsTags.type(Type.string));
+    private CreateSecretResponse createStringSecret(String secretString) {
+        final Map<String,String> tags = new java.util.HashMap<String, String>() {
+            {
+                put(Type.type, Type.string);
+            }};
 
-        final CreateSecretRequest request = new CreateSecretRequest()
-                .withName(CredentialNames.random())
-                .withSecretString(secretString)
-                .withTags(tags);
+        SecretString newSecretString = SecretString.newBuilder().setValue(secretString).build();
+
+        com.ai.procyon.jenkins.grpc.agent.Secret secret = com.ai.procyon.jenkins.grpc.agent.Secret.newBuilder()
+                .setName(CredentialNames.random())
+                .putAllTags(tags)
+                .build();
+        SecretValue secretValue = SecretValue.newBuilder()
+                .setSecret(secret)
+                .setString(newSecretString)
+                .build();
+
+        final CreateSecretRequest request = CreateSecretRequest.newBuilder()
+                .setSecretValue(secretValue).build();
 
         return secretsManager.getClient().createSecret(request);
     }

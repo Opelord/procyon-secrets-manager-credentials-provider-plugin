@@ -150,7 +150,6 @@ public abstract class CredentialsFactory {
                 if (response == null) {
                     throw new IllegalStateException(Messages.emptySecretError(id));
                 }
-                LOG.log(Level.WARNING, "got secret? {0}", response.hasSecretValue());
 
                 switch (response.getSecretValue().getSecretContentCase()) {
                     case FILE:

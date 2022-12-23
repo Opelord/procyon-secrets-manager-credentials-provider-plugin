@@ -13,4 +13,6 @@ import "messages.proto";
 service Connector {
   rpc ListSecrets(ListSecretsRequest) returns (ListSecretsResponse) {}
   rpc GetSecret(GetSecretRequest) returns (GetSecretResponse) {}
+  rpc CreateSecret(CreateSecretRequest) returns (CreateSecretResponse) {}
+  rpc DeleteSecret(DeleteSecretRequest) returns (CreateSecretResponse) {}
 }

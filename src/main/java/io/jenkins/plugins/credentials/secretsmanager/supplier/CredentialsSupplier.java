@@ -43,7 +43,6 @@ public class CredentialsSupplier implements Supplier<Collection<StandardCredenti
         Collection<StandardCredentials> result = secretList.stream()
                 .flatMap(secretListEntry -> {
                     final Integer id = secretListEntry.getID();
-                    LOG.log(Level.INFO, "Got secret list entry ID = {0}", id);
                     final String name = secretListEntry.getName();
                     final String description = secretListEntry.getDescription();
                     final Map<String, String> tags = secretListEntry.getTags();

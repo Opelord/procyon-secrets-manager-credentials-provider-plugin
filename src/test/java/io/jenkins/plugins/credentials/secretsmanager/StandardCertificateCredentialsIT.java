@@ -1,13 +1,15 @@
 package io.jenkins.plugins.credentials.secretsmanager;
 
-import com.amazonaws.services.secretsmanager.model.CreateSecretRequest;
-import com.amazonaws.services.secretsmanager.model.CreateSecretResult;
-import com.amazonaws.services.secretsmanager.model.Tag;
+import com.ai.procyon.jenkins.grpc.agent.CreateSecretRequest;
+import com.ai.procyon.jenkins.grpc.agent.CreateSecretResponse;
+import com.ai.procyon.jenkins.grpc.agent.File;
+import com.ai.procyon.jenkins.grpc.agent.SecretValue;
 import com.cloudbees.plugins.credentials.CredentialsUnavailableException;
 import com.cloudbees.plugins.credentials.SecretBytes;
 import com.cloudbees.plugins.credentials.common.StandardCertificateCredentials;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.impl.CertificateCredentialsImpl;
+import com.google.protobuf.ByteString;
 import hudson.model.Result;
 import hudson.util.ListBoxModel;
 import io.jenkins.plugins.casc.misc.ConfiguredWithCode;
@@ -24,7 +26,6 @@ import java.nio.ByteBuffer;
 import java.security.KeyPair;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
-import java.util.List;
 
 import static io.jenkins.plugins.credentials.secretsmanager.util.assertions.CustomAssertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -42,7 +43,7 @@ public class StandardCertificateCredentialsIT implements CredentialsTests {
     private static final Certificate[] CERTIFICATE_CHAIN = { Crypto.newSelfSignedCertificate(CN, KEY_PAIR) };
 
     public final MyJenkinsConfiguredWithCodeRule jenkins = new MyJenkinsConfiguredWithCodeRule();
-    public final AWSSecretsManagerRule secretsManager = new AWSSecretsManagerRule();
+    public final ProcyonSecretsManagerRule secretsManager = new ProcyonSecretsManagerRule();
 
     @Rule
     public final TestRule chain = Rules.jenkinsWithSecretsManager(jenkins, secretsManager);
@@ -52,22 +53,22 @@ public class StandardCertificateCredentialsIT implements CredentialsTests {
     public void shouldSupportListView() {
         // Given
         final KeyStore keyStore = Crypto.singletonKeyStore(ALIAS, KEY_PAIR.getPrivate(), PASSWORD, CERTIFICATE_CHAIN);
-        final CreateSecretResult foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
+        final CreateSecretResponse foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
 
         // When
         final ListBoxModel list = jenkins.getCredentials().list(StandardCertificateCredentials.class);
 
         // Then
         assertThat(list)
-                .containsOption(CN, foo.getName());
+                .containsOption(CN, foo.getSecret().getName());
     }
 
     @Test
     @ConfiguredWithCode(value = "/integration.yml")
     public void shouldHaveDescriptorIcon() {
         final byte[] keystore = Crypto.save(Crypto.singletonKeyStore(ALIAS, KEY_PAIR.getPrivate(), PASSWORD, CERTIFICATE_CHAIN), PASSWORD);
-        final CreateSecretResult foo = createCertificateSecret(keystore);
-        final StandardCertificateCredentials ours = lookup(StandardCertificateCredentials.class, foo.getName());
+        final CreateSecretResponse foo = createCertificateSecret(keystore);
+        final StandardCertificateCredentials ours = lookup(StandardCertificateCredentials.class, foo.getSecret().getName());
 
         final StandardCertificateCredentials theirs = new CertificateCredentialsImpl(null, "id", "description", "password", new CertificateCredentialsImpl.UploadedKeyStoreSource(SecretBytes.fromBytes(keystore)));
 
@@ -80,14 +81,14 @@ public class StandardCertificateCredentialsIT implements CredentialsTests {
     public void shouldHaveId() {
         // Given
         final KeyStore keyStore = Crypto.singletonKeyStore(ALIAS, KEY_PAIR.getPrivate(), PASSWORD, CERTIFICATE_CHAIN);
-        final CreateSecretResult foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
+        final CreateSecretResponse foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
 
         // When
-        final StandardCertificateCredentials credential = lookup(StandardCertificateCredentials.class, foo.getName());
+        final StandardCertificateCredentials credential = lookup(StandardCertificateCredentials.class, foo.getSecret().getName());
 
         // Then
         assertThat(credential)
-                .hasId(foo.getName());
+                .hasId(foo.getSecret().getName());
     }
 
     @Test
@@ -95,10 +96,10 @@ public class StandardCertificateCredentialsIT implements CredentialsTests {
     public void shouldHaveEmptyPassword() {
         // Given
         final KeyStore keyStore = Crypto.singletonKeyStore(ALIAS, KEY_PAIR.getPrivate(), PASSWORD, CERTIFICATE_CHAIN);
-        final CreateSecretResult foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
+        final CreateSecretResponse foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
 
         // When
-        final StandardCertificateCredentials credential = lookup(StandardCertificateCredentials.class, foo.getName());
+        final StandardCertificateCredentials credential = lookup(StandardCertificateCredentials.class, foo.getSecret().getName());
 
         // Then
         assertThat(credential)
@@ -110,10 +111,10 @@ public class StandardCertificateCredentialsIT implements CredentialsTests {
     public void shouldHaveKeystore() {
         // Given
         final KeyStore keyStore = Crypto.singletonKeyStore(ALIAS, KEY_PAIR.getPrivate(), PASSWORD, CERTIFICATE_CHAIN);
-        final CreateSecretResult foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
+        final CreateSecretResponse foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
 
         // When
-        final StandardCertificateCredentials credential = lookup(StandardCertificateCredentials.class, foo.getName());
+        final StandardCertificateCredentials credential = lookup(StandardCertificateCredentials.class, foo.getSecret().getName());
 
         // Then
         assertThat(credential.getKeyStore())
@@ -125,12 +126,12 @@ public class StandardCertificateCredentialsIT implements CredentialsTests {
     public void shouldSupportWithCredentialsBinding() {
         // Given
         final KeyStore keyStore = Crypto.singletonKeyStore(ALIAS, KEY_PAIR.getPrivate(), PASSWORD, CERTIFICATE_CHAIN);
-        final CreateSecretResult foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
+        final CreateSecretResponse foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
 
         // When
         final WorkflowRun run = runPipeline("",
                 "node {",
-                "  withCredentials([certificate(credentialsId: '" + foo.getName() + "', keystoreVariable: 'KEYSTORE')]) {",
+                "  withCredentials([certificate(credentialsId: '" + foo.getSecret().getName() + "', keystoreVariable: 'KEYSTORE')]) {",
                 "    echo \"Credential: {keystore: $KEYSTORE}\"",
                 "  }",
                 "}");
@@ -151,8 +152,8 @@ public class StandardCertificateCredentialsIT implements CredentialsTests {
     public void shouldSupportSnapshots() {
         // Given
         final KeyStore keyStore = Crypto.singletonKeyStore(ALIAS, KEY_PAIR.getPrivate(), PASSWORD, CERTIFICATE_CHAIN);
-        final CreateSecretResult foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
-        final StandardCertificateCredentials before = lookup(StandardCertificateCredentials.class, foo.getName());
+        final CreateSecretResponse foo = createCertificateSecret(Crypto.save(keyStore, PASSWORD));
+        final StandardCertificateCredentials before = lookup(StandardCertificateCredentials.class, foo.getSecret().getName());
 
         // When
         final StandardCertificateCredentials after = CredentialSnapshots.snapshot(before);
@@ -169,24 +170,37 @@ public class StandardCertificateCredentialsIT implements CredentialsTests {
     @ConfiguredWithCode(value = "/integration.yml")
     public void shouldNotTolerateMalformattedKeyStore() {
         // Given
-        final CreateSecretResult foo = createCertificateSecret(new byte[] {0x00, 0x01});
+        final CreateSecretResponse foo = createCertificateSecret(new byte[] {0x00, 0x01});
 
         // When
-        final StandardCertificateCredentials credential = jenkins.getCredentials().lookup(StandardCertificateCredentials.class, foo.getName());
+        final StandardCertificateCredentials credential = jenkins.getCredentials().lookup(StandardCertificateCredentials.class, foo.getSecret().getName());
 
         // Then
         assertThatThrownBy(credential::getKeyStore)
                 .isInstanceOf(CredentialsUnavailableException.class);
     }
 
-    private CreateSecretResult createCertificateSecret(byte[] secretBinary) {
-        final List<Tag> tags = Lists.of(AwsTags.type(Type.certificate));
+    private CreateSecretResponse createCertificateSecret(byte[] secretBinary) {
+        final java.util.Map<String,String> tags = new java.util.HashMap<String, String>() {
+            {
+                put(Type.type, Type.certificate);
+            }};
 
-        final CreateSecretRequest request = new CreateSecretRequest()
-                .withName(CredentialNames.random())
-                .withSecretBinary(ByteBuffer.wrap(secretBinary))
-                .withTags(tags);
+        com.ai.procyon.jenkins.grpc.agent.Certificate newCert = com.ai.procyon.jenkins.grpc.agent.Certificate.newBuilder()
+                .setKeyStore(ByteString.copyFrom(secretBinary))
+                .build();
 
+        com.ai.procyon.jenkins.grpc.agent.Secret secret = com.ai.procyon.jenkins.grpc.agent.Secret.newBuilder()
+                .setName(CredentialNames.random())
+                .putAllTags(tags)
+                .build();
+        SecretValue secretValue = SecretValue.newBuilder()
+                .setSecret(secret)
+                .setCertificate(newCert)
+                .build();
+
+        final CreateSecretRequest request = CreateSecretRequest.newBuilder()
+                .setSecretValue(secretValue).build();
         return secretsManager.getClient().createSecret(request);
     }
 

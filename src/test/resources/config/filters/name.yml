@@ -1,7 +1,6 @@
 unclassified:
-  awsCredentialsProvider:
+  procyonCredentialsProvider:
     listSecrets:
       filters:
-        - key: name
-          values:
-            - foo
+        - key: foo
+          value: bar

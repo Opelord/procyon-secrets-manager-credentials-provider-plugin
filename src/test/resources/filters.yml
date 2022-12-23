@@ -1,14 +1,9 @@
 unclassified:
-  awsCredentialsProvider:
+  procyonCredentialsProvider:
     client:
       endpointConfiguration:
-        serviceEndpoint: ${AWS_SERVICE_ENDPOINT}
-        signingRegion: ${AWS_SIGNING_REGION}
+        serviceEndpoint: ${PROCYON_SERVICE_ENDPOINT}
     listSecrets:
       filters:
-        - key: tag-key
-          values:
-            - product
-        - key: tag-value
-          values:
-            - foo
+        - key: product
+          value: foo

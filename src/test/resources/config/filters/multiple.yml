@@ -1,10 +1,8 @@
 unclassified:
-  awsCredentialsProvider:
+  procyonCredentialsProvider:
     listSecrets:
       filters:
-        - key: tag-key
-          values:
-            - foo
-        - key: tag-value
-          values:
-            - bar
+        - key: foo
+          value: bar
+        - key: baz
+          value: qux

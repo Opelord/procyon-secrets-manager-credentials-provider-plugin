@@ -1,14 +1,14 @@
 package io.jenkins.plugins.credentials.secretsmanager;
 
-import com.amazonaws.services.secretsmanager.model.CreateSecretRequest;
-import com.amazonaws.services.secretsmanager.model.CreateSecretResult;
-import com.amazonaws.services.secretsmanager.model.Tag;
+import com.ai.procyon.jenkins.grpc.agent.CreateSecretRequest;
+import com.ai.procyon.jenkins.grpc.agent.CreateSecretResponse;
+import com.ai.procyon.jenkins.grpc.agent.SecretString;
+import com.ai.procyon.jenkins.grpc.agent.SecretValue;
+import io.jenkins.plugins.credentials.secretsmanager.factory.Type;
 import io.jenkins.plugins.casc.misc.ConfiguredWithCode;
 import io.jenkins.plugins.credentials.secretsmanager.config.Filter;
 import io.jenkins.plugins.credentials.secretsmanager.config.ListSecrets;
 import io.jenkins.plugins.credentials.secretsmanager.config.PluginConfiguration;
-import io.jenkins.plugins.credentials.secretsmanager.config.Value;
-import io.jenkins.plugins.credentials.secretsmanager.factory.Type;
 import io.jenkins.plugins.credentials.secretsmanager.util.*;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.junit.Rule;
@@ -16,13 +16,14 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 public class CacheIT {
 
     public final MyJenkinsConfiguredWithCodeRule jenkins = new MyJenkinsConfiguredWithCodeRule();
-    public final AWSSecretsManagerRule secretsManager = new AWSSecretsManagerRule();
+    public final ProcyonSecretsManagerRule secretsManager = new ProcyonSecretsManagerRule();
 
     @Rule
     public final TestRule chain = Rules.jenkinsWithSecretsManager(jenkins, secretsManager);
@@ -31,20 +32,20 @@ public class CacheIT {
     @ConfiguredWithCode("/integration.yml")
     public void shouldCacheCredentialsByDefault() {
         // Given
-        final CreateSecretResult foo = createSecretWithTag("product", "foo");
-        final CreateSecretResult bar = createSecretWithTag("product", "bar");
+        final CreateSecretResponse foo = createSecretWithTag("product", "foo");
+        final CreateSecretResponse bar = createSecretWithTag("product", "bar");
 
         // When
         final List<StringCredentials> first = jenkins.getCredentials().lookup(StringCredentials.class);
         // and
-        setFilter("tag-value", "foo");
+        setFilter("product", "foo");
         // and
         final List<StringCredentials> second = jenkins.getCredentials().lookup(StringCredentials.class);
 
         // Then
         assertSoftly(s -> {
-            s.assertThat(first).as("First call").extracting("id").containsOnly(foo.getName(), bar.getName());
-            s.assertThat(second).as("Second call").extracting("id").containsOnly(foo.getName(), bar.getName());
+            s.assertThat(first).as("First call").extracting("id").containsOnly(foo.getSecret().getName(), bar.getSecret().getName());
+            s.assertThat(second).as("Second call").extracting("id").containsOnly(foo.getSecret().getName(), bar.getSecret().getName());
         });
     }
 
@@ -52,20 +53,20 @@ public class CacheIT {
     @ConfiguredWithCode("/cache.yml")
     public void shouldCacheCredentialsWhenEnabled() {
         // Given
-        final CreateSecretResult foo = createSecretWithTag("product", "foo");
-        final CreateSecretResult bar = createSecretWithTag("product", "bar");
+        final CreateSecretResponse foo = createSecretWithTag("product", "foo");
+        final CreateSecretResponse bar = createSecretWithTag("product", "bar");
 
         // When
         final List<StringCredentials> first = jenkins.getCredentials().lookup(StringCredentials.class);
         // and
-        setFilter("tag-value", "foo");
+        setFilter("product", "foo");
         // and
         final List<StringCredentials> second = jenkins.getCredentials().lookup(StringCredentials.class);
 
         // Then
         assertSoftly(s -> {
-            s.assertThat(first).as("First call").extracting("id").containsOnly(foo.getName(), bar.getName());
-            s.assertThat(second).as("Second call").extracting("id").containsOnly(foo.getName(), bar.getName());
+            s.assertThat(first).as("First call").extracting("id").containsOnly(foo.getSecret().getName(), bar.getSecret().getName());
+            s.assertThat(second).as("Second call").extracting("id").containsOnly(foo.getSecret().getName(), bar.getSecret().getName());
         });
     }
 
@@ -73,20 +74,20 @@ public class CacheIT {
     @ConfiguredWithCode("/no-cache.yml")
     public void shouldNotCacheCredentialsWhenDisabled() {
         // Given
-        final CreateSecretResult foo = createSecretWithTag("product", "foo");
-        final CreateSecretResult bar = createSecretWithTag("product", "bar");
+        final CreateSecretResponse foo = createSecretWithTag("product", "foo");
+        final CreateSecretResponse bar = createSecretWithTag("product", "bar");
 
         // When
         final List<StringCredentials> first = jenkins.getCredentials().lookup(StringCredentials.class);
         // and
-        setFilter("tag-value", "foo");
+        setFilter("product", "foo");
         // and
         final List<StringCredentials> second = jenkins.getCredentials().lookup(StringCredentials.class);
 
         // Then
         assertSoftly(s -> {
-            s.assertThat(first).as("First call").extracting("id").containsOnly(foo.getName(), bar.getName());
-            s.assertThat(second).as("Second call").extracting("id").containsOnly(foo.getName());
+            s.assertThat(first).as("First call").extracting("id").containsOnly(foo.getSecret().getName(), bar.getSecret().getName());
+            s.assertThat(second).as("Second call").extracting("id").containsOnly(foo.getSecret().getName());
         });
     }
 
@@ -97,15 +98,29 @@ public class CacheIT {
         config.setListSecrets(listSecrets);
     }
 
-    private CreateSecretResult createSecretWithTag(String key, String value) {
-        return createSecret("supersecret", Lists.of(AwsTags.type(Type.string), AwsTags.tag(key, value)));
+    private CreateSecretResponse createSecretWithTag(String key, String value) {
+        Map<String,String> tags = new java.util.HashMap<String, String>() {
+            {
+                put(Type.type, Type.string);
+                put(key,value);
+            }};
+        return createSecret("supersecret", tags);
     }
 
-    private CreateSecretResult createSecret(String secretString, List<Tag> tags) {
-        final CreateSecretRequest request = new CreateSecretRequest()
-                .withName(CredentialNames.random())
-                .withSecretString(secretString)
-                .withTags(tags);
+    private CreateSecretResponse createSecret(String secretString, Map<String,String> tags) {
+        SecretString newSecretString = SecretString.newBuilder().setValue(secretString).build();
+
+        com.ai.procyon.jenkins.grpc.agent.Secret secret = com.ai.procyon.jenkins.grpc.agent.Secret.newBuilder()
+                .setName(CredentialNames.random())
+                .putAllTags(tags)
+                .build();
+        SecretValue secretValue = SecretValue.newBuilder()
+                .setSecret(secret)
+                .setString(newSecretString)
+                .build();
+
+        final CreateSecretRequest request = CreateSecretRequest.newBuilder()
+                .setSecretValue(secretValue).build();
 
         return secretsManager.getClient().createSecret(request);
     }

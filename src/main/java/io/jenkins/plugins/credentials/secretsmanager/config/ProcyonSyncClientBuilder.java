@@ -2,7 +2,6 @@ package io.jenkins.plugins.credentials.secretsmanager.config;
 
 import com.amazonaws.annotation.NotThreadSafe;
 import com.amazonaws.annotation.SdkProtectedApi;
-import io.jenkins.plugins.credentials.secretsmanager.config.ClientConfiguration;
 
 /**
  * Base class for all service specific sync client builders.

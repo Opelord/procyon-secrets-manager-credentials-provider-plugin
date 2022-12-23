@@ -1,4 +1,0 @@
-unclassified:
-  awsCredentialsProvider:
-    client:
-      region: "us-east-1"

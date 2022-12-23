@@ -1,7 +1,0 @@
-unclassified:
-  awsCredentialsProvider:
-    transformations:
-      name:
-        removePrefixes:
-          prefixes:
-          - "foo-"
